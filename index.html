@@ -10,15 +10,10 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
-<<<<<<< HEAD
             background-color: #fff1f1;
             color: #333;
             background-image: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), 
                 url('data:image/svg+xml;utf8,<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="2" fill="%23c41e3a" opacity="0.2"/></svg>');
-=======
-            background-color: #f0f8ff;
-            color: #333;
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         .container {
@@ -27,10 +22,7 @@
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             margin-bottom: 20px;
-<<<<<<< HEAD
             border: 2px solid #c41e3a;
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         .login-section, .quiz-container, .leaderboard {
@@ -44,31 +36,18 @@
         .question {
             margin-bottom: 30px;
             display: none;
-<<<<<<< HEAD
             animation: fadeIn 0.5s;
         }
 
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         .question.active {
             display: block;
         }
 
-<<<<<<< HEAD
-=======
-        .question img {
-            max-width: 100%;
-            height: auto;
-            margin: 10px 0;
-            border-radius: 5px;
-        }
-
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         .options {
             display: flex;
             flex-direction: column;
@@ -76,7 +55,6 @@
         }
 
         button {
-<<<<<<< HEAD
             padding: 12px 24px;
             border: none;
             border-radius: 5px;
@@ -90,25 +68,11 @@
         button:hover {
             background-color: #a01830;
             transform: translateY(-2px);
-=======
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-            margin: 5px;
-        }
-
-        button:hover {
-            background-color: #45a049;
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
-<<<<<<< HEAD
             transform: none;
         }
 
@@ -149,83 +113,43 @@
         input[type="text"]:focus, input[type="password"]:focus {
             border-color: #c41e3a;
             outline: none;
-=======
-        }
-
-        .option-btn {
-            background-color: #2196F3;
-            text-align: left;
-        }
-
-        .option-btn:hover {
-            background-color: #1976D2;
-        }
-
-        input[type="text"], input[type="password"] {
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: 100%;
-            max-width: 300px;
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         h1 {
             color: #c41e3a;
             text-align: center;
-<<<<<<< HEAD
             font-size: 2.5em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         .team-info {
             background-color: #e8f5e9;
-<<<<<<< HEAD
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
             border-left: 5px solid #2f5233;
-=======
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 20px;
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         .leaderboard table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-<<<<<<< HEAD
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .leaderboard th, .leaderboard td {
             padding: 12px;
-=======
-        }
-
-        .leaderboard th, .leaderboard td {
-            padding: 10px;
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
             border: 1px solid #ddd;
             text-align: left;
         }
 
         .leaderboard th {
-<<<<<<< HEAD
             background-color: #c41e3a;
             color: white;
         }
 
         .leaderboard tr:nth-child(even) {
             background-color: #f9f9f9;
-=======
-            background-color: #f5f5f5;
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         .admin-controls {
@@ -234,7 +158,6 @@
             background-color: #fff3e0;
             border-radius: 5px;
             display: none;
-<<<<<<< HEAD
             border-left: 5px solid #ff9800;
         }
 
@@ -257,8 +180,6 @@
             height: 100%;
             background-color: #c41e3a;
             transition: width 0.3s ease;
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
     </style>
 </head>
@@ -269,15 +190,9 @@
     <div class="login-section active container">
         <h2>Team Login</h2>
         <div>
-<<<<<<< HEAD
             <input type="text" id="team-name" placeholder="Enter your team name" required>
             <input type="password" id="team-password" placeholder="Choose a team password" required>
             <button onclick="login()">Start Quiz</button>
-=======
-            <input type="text" id="team-name" placeholder="Team Name" required>
-            <input type="password" id="team-password" placeholder="Team Password" required>
-            <button onclick="login()">Login</button>
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         </div>
         <p>Quiz Master? <a href="#" onclick="showAdminLogin()">Login here</a></p>
     </div>
@@ -289,7 +204,6 @@
             <p>Current Score: <span id="current-score">0</span></p>
         </div>
 
-<<<<<<< HEAD
         <div class="progress-bar">
             <div class="progress" id="quiz-progress"></div>
         </div>
@@ -301,21 +215,10 @@
                 <button class="option-btn" onclick="checkAnswer(this, 'A')">A) Jacob Marley</button>
                 <button class="option-btn" onclick="checkAnswer(this, 'B')">B) Bob Cratchit</button>
                 <button class="option-btn" onclick="checkAnswer(this, 'C')">C) Fred Holywell</button>
-=======
-        <div class="question active" data-question="1">
-            <h2>Question 1</h2>
-            <img src="/api/placeholder/600/400" alt="Question 1 Image">
-            <p>What's the name of this Christmas character?</p>
-            <div class="options">
-                <button class="option-btn" onclick="checkAnswer(this, 'A')">A) Rudolph</button>
-                <button class="option-btn" onclick="checkAnswer(this, 'B')">B) Dasher</button>
-                <button class="option-btn" onclick="checkAnswer(this, 'C')">C) Blitzen</button>
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
             </div>
         </div>
 
         <div class="question" data-question="2">
-<<<<<<< HEAD
             <div class="question-number">Question 2 of 5</div>
             <h3>Which Christmas beverage is also known as 'Milk Punch'?</h3>
             <div class="options">
@@ -330,18 +233,11 @@
             <h3>Which country started the tradition of putting up Christmas trees?</h3>
             <div class="options">
                 <button class="option-btn" onclick="checkAnswer(this, 'A')">A) United States</button>
-=======
-            <h2>Question 2</h2>
-            <p>Which country started the tradition of putting up Christmas trees?</p>
-            <div class="options">
-                <button class="option-btn" onclick="checkAnswer(this, 'A')">A) USA</button>
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
                 <button class="option-btn" onclick="checkAnswer(this, 'B')">B) Germany</button>
                 <button class="option-btn" onclick="checkAnswer(this, 'C')">C) England</button>
             </div>
         </div>
 
-<<<<<<< HEAD
         <div class="question" data-question="4">
             <div class="question-number">Question 4 of 5</div>
             <h3>What is traditionally hidden inside a Christmas pudding?</h3>
@@ -362,8 +258,6 @@
             </div>
         </div>
 
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         <div class="navigation">
             <button onclick="previousQuestion()" id="prev-btn" style="display: none;">Previous</button>
             <button onclick="nextQuestion()" id="next-btn">Next</button>
@@ -372,11 +266,7 @@
 
     <!-- Leaderboard -->
     <div class="leaderboard container">
-<<<<<<< HEAD
         <h2>🏆 Team Leaderboard</h2>
-=======
-        <h2>Team Leaderboard</h2>
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         <table>
             <thead>
                 <tr>
@@ -388,11 +278,7 @@
             <tbody id="leaderboard-body">
             </tbody>
         </table>
-<<<<<<< HEAD
         <button onclick="logout()">Exit Quiz</button>
-=======
-        <button onclick="logout()">Logout</button>
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
     </div>
 
     <!-- Admin Controls -->
@@ -406,7 +292,6 @@
     <script>
         // Quiz configuration
         const quizConfig = {
-<<<<<<< HEAD
             adminPassword: 'quizmaster2024',
             questions: {
                 1: 'A', // Jacob Marley
@@ -414,12 +299,6 @@
                 3: 'B', // Germany
                 4: 'A', // Silver Coin
                 5: 'C'  // White Rock Beverages
-=======
-            adminPassword: 'quizmaster2024', // Change this!
-            questions: {
-                1: 'A',
-                2: 'B'
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
             }
         };
 
@@ -432,27 +311,21 @@
             localStorage.setItem('quizTeams', JSON.stringify({}));
         }
 
-<<<<<<< HEAD
         function updateProgress() {
             const totalQuestions = Object.keys(quizConfig.questions).length;
             const progress = (currentQuestion - 1) / totalQuestions * 100;
             document.getElementById('quiz-progress').style.width = `${progress}%`;
         }
 
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         function login() {
             const teamName = document.getElementById('team-name').value;
             const password = document.getElementById('team-password').value;
 
-<<<<<<< HEAD
             if (!teamName || !password) {
                 alert('Please enter both team name and password!');
                 return;
             }
 
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
             if (password === quizConfig.adminPassword) {
                 isAdmin = true;
                 document.querySelector('.admin-controls').style.display = 'block';
@@ -478,10 +351,7 @@
             currentTeam = teamName;
             document.getElementById('current-team').textContent = teamName;
             showQuiz();
-<<<<<<< HEAD
             updateProgress();
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         function showAdminLogin() {
@@ -492,10 +362,7 @@
         function showQuiz() {
             document.querySelector('.login-section').classList.remove('active');
             document.querySelector('.quiz-container').classList.add('active');
-<<<<<<< HEAD
             document.querySelector('.leaderboard').classList.remove('active');
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
             updateScore();
         }
 
@@ -562,34 +429,24 @@
         function logout() {
             currentTeam = '';
             isAdmin = false;
-<<<<<<< HEAD
             currentQuestion = 1;
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
             document.querySelector('.admin-controls').style.display = 'none';
             document.querySelector('.leaderboard').classList.remove('active');
             document.querySelector('.quiz-container').classList.remove('active');
             document.querySelector('.login-section').classList.add('active');
             document.getElementById('team-name').value = '';
             document.getElementById('team-password').value = '';
-<<<<<<< HEAD
             // Reset all questions to initial state
             document.querySelectorAll('.option-btn').forEach(btn => {
                 btn.disabled = false;
                 btn.style.backgroundColor = '#2f5233';
             });
             updateProgress();
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
         }
 
         function resetAllScores() {
             if (!isAdmin) return;
-<<<<<<< HEAD
             if (confirm('Are you sure you want to reset all scores? This cannot be undone.')) {
-=======
-            if (confirm('Are you sure you want to reset all scores?')) {
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
                 localStorage.setItem('quizTeams', JSON.stringify({}));
                 updateLeaderboard();
             }
@@ -607,11 +464,7 @@
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-<<<<<<< HEAD
             a.download = 'christmas-quiz-scores.csv';
-=======
-            a.download = 'quiz-scores.csv';
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
             a.click();
         }
 
@@ -621,10 +474,7 @@
             if (currentQuestion < totalQuestions) {
                 currentQuestion++;
                 showQuestion(currentQuestion);
-<<<<<<< HEAD
                 updateProgress();
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
             } else {
                 showLeaderboard();
             }
@@ -634,10 +484,7 @@
             if (currentQuestion > 1) {
                 currentQuestion--;
                 showQuestion(currentQuestion);
-<<<<<<< HEAD
                 updateProgress();
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
             }
         }
 
@@ -652,12 +499,9 @@
             const totalQuestions = Object.keys(quizConfig.questions).length;
             document.getElementById('next-btn').textContent = num === totalQuestions ? 'Finish' : 'Next';
         }
-<<<<<<< HEAD
 
         // Initialize progress bar
         updateProgress();
-=======
->>>>>>> d18d0859b906d82d9de52225462d4bacce3c17dc
     </script>
 </body>
 </html>
