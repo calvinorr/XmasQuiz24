@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Christmas Quiz 2024 - Team Edition</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .login-section, .quiz-container, .leaderboard {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .question {
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .question img {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .option-btn {
+            background-color: #2196F3;
+            text-align: left;
+        }
+
+        .option-btn:hover {
+            background-color: #1976D2;
+        }
+
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        h1 {
+            color: #c41e3a;
+            text-align: center;
+        }
+
+        .team-info {
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .leaderboard table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .leaderboard th, .leaderboard td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .leaderboard th {
+            background-color: #f5f5f5;
+        }
+
+        .admin-controls {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff3e0;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎄 Family Christmas Quiz 2024 🎅</h1>
+    
+    <!-- Login Section -->
+    <div class="login-section active container">
+        <h2>Team Login</h2>
+        <div>
+            <input type="text" id="team-name" placeholder="Team Name" required>
+            <input type="password" id="team-password" placeholder="Team Password" required>
+            <button onclick="login()">Login</button>
+        </div>
+        <p>Quiz Master? <a href="#" onclick="showAdminLogin()">Login here</a></p>
+    </div>
+
+    <!-- Quiz Container -->
+    <div class="quiz-container container">
+        <div class="team-info">
+            <h3>Team: <span id="current-team"></span></h3>
+            <p>Current Score: <span id="current-score">0</span></p>
+        </div>
+
+        <div class="question active" data-question="1">
+            <h2>Question 1</h2>
+            <img src="/api/placeholder/600/400" alt="Question 1 Image">
+            <p>What's the name of this Christmas character?</p>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer(this, 'A')">A) Rudolph</button>
+                <button class="option-btn" onclick="checkAnswer(this, 'B')">B) Dasher</button>
+                <button class="option-btn" onclick="checkAnswer(this, 'C')">C) Blitzen</button>
+            </div>
+        </div>
+
+        <div class="question" data-question="2">
+            <h2>Question 2</h2>
+            <p>Which country started the tradition of putting up Christmas trees?</p>
+            <div class="options">
+                <button class="option-btn" onclick="checkAnswer(this, 'A')">A) USA</button>
+                <button class="option-btn" onclick="checkAnswer(this, 'B')">B) Germany</button>
+                <button class="option-btn" onclick="checkAnswer(this, 'C')">C) England</button>
+            </div>
+        </div>
+
+        <div class="navigation">
+            <button onclick="previousQuestion()" id="prev-btn" style="display: none;">Previous</button>
+            <button onclick="nextQuestion()" id="next-btn">Next</button>
+        </div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div class="leaderboard container">
+        <h2>Team Leaderboard</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Team</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+            </tbody>
+        </table>
+        <button onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Admin Controls -->
+    <div class="admin-controls container">
+        <h2>Quiz Master Controls</h2>
+        <button onclick="resetAllScores()">Reset All Scores</button>
+        <button onclick="showLeaderboard()">View Leaderboard</button>
+        <button onclick="exportScores()">Export Scores</button>
+    </div>
+
+    <script>
+        // Quiz configuration
+        const quizConfig = {
+            adminPassword: 'quizmaster2024', // Change this!
+            questions: {
+                1: 'A',
+                2: 'B'
+            }
+        };
+
+        let currentTeam = '';
+        let currentQuestion = 1;
+        let isAdmin = false;
+
+        // Initialize teams data structure in localStorage if it doesn't exist
+        if (!localStorage.getItem('quizTeams')) {
+            localStorage.setItem('quizTeams', JSON.stringify({}));
+        }
+
+        function login() {
+            const teamName = document.getElementById('team-name').value;
+            const password = document.getElementById('team-password').value;
+
+            if (password === quizConfig.adminPassword) {
+                isAdmin = true;
+                document.querySelector('.admin-controls').style.display = 'block';
+                showLeaderboard();
+                return;
+            }
+
+            let teams = JSON.parse(localStorage.getItem('quizTeams'));
+            
+            if (!teams[teamName]) {
+                // New team
+                teams[teamName] = {
+                    password: password,
+                    score: 0,
+                    answeredQuestions: {}
+                };
+                localStorage.setItem('quizTeams', JSON.stringify(teams));
+            } else if (teams[teamName].password !== password) {
+                alert('Incorrect password!');
+                return;
+            }
+
+            currentTeam = teamName;
+            document.getElementById('current-team').textContent = teamName;
+            showQuiz();
+        }
+
+        function showAdminLogin() {
+            document.getElementById('team-name').value = 'Quiz Master';
+            document.getElementById('team-password').focus();
+        }
+
+        function showQuiz() {
+            document.querySelector('.login-section').classList.remove('active');
+            document.querySelector('.quiz-container').classList.add('active');
+            updateScore();
+        }
+
+        function showLeaderboard() {
+            document.querySelector('.login-section').classList.remove('active');
+            document.querySelector('.quiz-container').classList.remove('active');
+            document.querySelector('.leaderboard').classList.add('active');
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const teams = JSON.parse(localStorage.getItem('quizTeams'));
+            const leaderboardBody = document.getElementById('leaderboard-body');
+            
+            // Sort teams by score
+            const sortedTeams = Object.entries(teams)
+                .map(([name, data]) => ({name, score: data.score}))
+                .sort((a, b) => b.score - a.score);
+
+            leaderboardBody.innerHTML = sortedTeams
+                .map((team, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${team.name}</td>
+                        <td>${team.score}</td>
+                    </tr>
+                `).join('');
+        }
+
+        function checkAnswer(button, answer) {
+            if (!currentTeam) return;
+
+            const teams = JSON.parse(localStorage.getItem('quizTeams'));
+            const questionNum = currentQuestion;
+
+            // Prevent answering the same question twice
+            if (teams[currentTeam].answeredQuestions[questionNum]) {
+                return;
+            }
+
+            const buttons = button.parentElement.querySelectorAll('button');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn === button) {
+                    if (answer === quizConfig.questions[questionNum]) {
+                        btn.style.backgroundColor = '#4CAF50';
+                        teams[currentTeam].score += 1;
+                    } else {
+                        btn.style.backgroundColor = '#f44336';
+                    }
+                }
+            });
+
+            teams[currentTeam].answeredQuestions[questionNum] = answer;
+            localStorage.setItem('quizTeams', JSON.stringify(teams));
+            updateScore();
+        }
+
+        function updateScore() {
+            const teams = JSON.parse(localStorage.getItem('quizTeams'));
+            document.getElementById('current-score').textContent = teams[currentTeam].score;
+        }
+
+        function logout() {
+            currentTeam = '';
+            isAdmin = false;
+            document.querySelector('.admin-controls').style.display = 'none';
+            document.querySelector('.leaderboard').classList.remove('active');
+            document.querySelector('.quiz-container').classList.remove('active');
+            document.querySelector('.login-section').classList.add('active');
+            document.getElementById('team-name').value = '';
+            document.getElementById('team-password').value = '';
+        }
+
+        function resetAllScores() {
+            if (!isAdmin) return;
+            if (confirm('Are you sure you want to reset all scores?')) {
+                localStorage.setItem('quizTeams', JSON.stringify({}));
+                updateLeaderboard();
+            }
+        }
+
+        function exportScores() {
+            if (!isAdmin) return;
+            const teams = JSON.parse(localStorage.getItem('quizTeams'));
+            const csv = 'Team,Score\n' + 
+                Object.entries(teams)
+                    .map(([team, data]) => `${team},${data.score}`)
+                    .join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'quiz-scores.csv';
+            a.click();
+        }
+
+        // Navigation functions
+        function nextQuestion() {
+            const totalQuestions = Object.keys(quizConfig.questions).length;
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else {
+                showLeaderboard();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function showQuestion(num) {
+            document.querySelectorAll('.question').forEach(q => {
+                q.classList.remove('active');
+            });
+            document.querySelector(`[data-question="${num}"]`).classList.add('active');
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').style.display = num === 1 ? 'none' : 'inline';
+            const totalQuestions = Object.keys(quizConfig.questions).length;
+            document.getElementById('next-btn').textContent = num === totalQuestions ? 'Finish' : 'Next';
+        }
+    </script>
+</body>
+</html>
