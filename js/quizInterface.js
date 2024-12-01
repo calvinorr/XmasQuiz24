@@ -30,9 +30,13 @@ export class QuizInterface {
             const module = await import(modulePath);
             console.log('Config module loaded:', module);
 
-            const { QuizState, quizConfig } = module;
-            this.quizState = new QuizState();
+            const { quizConfig, createQuizState, updateProgress, updateRoundIndicators } = module;
+            this.quizState = createQuizState();
+            console.log('QuizState created:', this.quizState);
+            
             this.quizConfig = quizConfig;
+            this.updateProgress = updateProgress;
+            this.updateRoundIndicators = updateRoundIndicators;
 
             // Initialize UI based on current page
             if (isRoundPage) {
@@ -90,7 +94,9 @@ export class QuizInterface {
         }
 
         // Initialize progress
-        this.updateProgress(1);
+        const totalQuestions = document.querySelectorAll('.question').length;
+        this.updateProgress(1, totalQuestions);
+        this.updateRoundIndicators(this.currentRoundId, this.quizState.getTeamProgress(this.currentTeam)?.roundsCompleted || {});
     }
 
     handleOptionSelect(button) {
@@ -185,7 +191,8 @@ export class QuizInterface {
             document.getElementById('prev-btn').style.display = questionNumber === 1 ? 'none' : 'inline';
             document.getElementById('next-btn').textContent = 'Next';
             
-            this.updateProgress(questionNumber);
+            const totalQuestions = document.querySelectorAll('.question').length;
+            this.updateProgress(questionNumber, totalQuestions);
         }
     }
 
@@ -203,18 +210,12 @@ export class QuizInterface {
             document.getElementById('prev-btn').style.display = 'inline';
             document.getElementById('next-btn').textContent = questionNumber === totalQuestions ? 'Finish Round' : 'Next';
             
-            this.updateProgress(questionNumber);
+            this.updateProgress(questionNumber, totalQuestions);
         } else {
             // Complete round
             this.quizState.completeRound(this.currentTeam, this.currentRoundId);
             window.location.href = `${this.basePath}/rounds/round${this.currentRoundId + 1}.html`;
         }
-    }
-
-    updateProgress(questionNumber) {
-        const totalQuestions = document.querySelectorAll('.question').length;
-        const progress = (questionNumber / totalQuestions) * 100;
-        document.getElementById('quiz-progress').style.width = `${progress}%`;
     }
 
     showError(message) {

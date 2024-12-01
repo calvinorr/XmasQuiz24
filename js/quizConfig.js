@@ -40,23 +40,43 @@ export const quizConfig = {
     ]
 };
 
-export class QuizState {
+class QuizState {
     constructor() {
+        console.log('Initializing QuizState...');
+        this.teams = {};
         this.loadState();
+        console.log('QuizState initialized:', this.teams);
     }
 
     loadState() {
-        if (!localStorage.getItem('quizTeams')) {
-            localStorage.setItem('quizTeams', JSON.stringify({}));
+        try {
+            console.log('Loading state from localStorage...');
+            const savedState = localStorage.getItem('quizTeams');
+            if (savedState) {
+                this.teams = JSON.parse(savedState);
+                console.log('State loaded:', this.teams);
+            } else {
+                console.log('No saved state found, using empty teams object');
+                localStorage.setItem('quizTeams', JSON.stringify(this.teams));
+            }
+        } catch (error) {
+            console.error('Error loading state:', error);
+            this.teams = {};
+            localStorage.setItem('quizTeams', JSON.stringify(this.teams));
         }
-        this.teams = JSON.parse(localStorage.getItem('quizTeams'));
     }
 
     saveState() {
-        localStorage.setItem('quizTeams', JSON.stringify(this.teams));
+        try {
+            console.log('Saving state:', this.teams);
+            localStorage.setItem('quizTeams', JSON.stringify(this.teams));
+        } catch (error) {
+            console.error('Error saving state:', error);
+        }
     }
 
     addTeam(teamName, password) {
+        console.log('Adding/checking team:', teamName);
         if (this.teams[teamName]) {
             if (this.teams[teamName].password !== password) {
                 throw new Error('Incorrect password!');
@@ -133,7 +153,14 @@ export class QuizState {
         a.href = url;
         a.download = 'christmas-quiz-scores.csv';
         a.click();
+        window.URL.revokeObjectURL(url);
     }
+}
+
+// Export a function to create new QuizState instances
+export function createQuizState() {
+    console.log('Creating new QuizState instance...');
+    return new QuizState();
 }
 
 export function updateProgress(currentQuestion, totalQuestions) {
