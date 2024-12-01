@@ -20,12 +20,17 @@ body {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .question {
     margin-bottom: 30px;
+    display: none;
     animation: fadeIn 0.5s;
+}
+
+.question.active {
+    display: block;
 }
 
 @keyframes fadeIn {
@@ -45,6 +50,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin: 20px 0;
 }
 
 button {
@@ -56,6 +62,7 @@ button {
     cursor: pointer;
     margin: 5px;
     transition: all 0.3s ease;
+    font-size: 1.1em;
 }
 
 button:hover {
@@ -72,9 +79,9 @@ button:disabled {
 .option-btn {
     background-color: #2f5233;
     text-align: left;
-    font-size: 1.1em;
     position: relative;
     padding-left: 40px;
+    transition: all 0.3s ease;
 }
 
 .option-btn:before {
@@ -87,6 +94,8 @@ button:disabled {
     height: 20px;
     background-color: white;
     border-radius: 50%;
+    border: 2px solid #2f5233;
+    transition: all 0.3s ease;
 }
 
 .option-btn:hover {
@@ -97,15 +106,33 @@ button:disabled {
     background-color: #1976D2;
 }
 
+.option-btn.selected:before {
+    background-color: #fff;
+    border-color: #1976D2;
+}
+
+.option-btn.correct {
+    background-color: #4CAF50;
+}
+
+.option-btn.incorrect {
+    background-color: #f44336;
+}
+
 .submit-answer {
     background-color: #4CAF50;
     width: 100%;
     margin-top: 20px;
-    font-size: 1.1em;
+    font-size: 1.2em;
+    padding: 15px;
 }
 
 .submit-answer:hover {
     background-color: #45a049;
+}
+
+.submit-answer:disabled {
+    background-color: #cccccc;
 }
 
 input[type="text"], input[type="password"] {
@@ -116,6 +143,7 @@ input[type="text"], input[type="password"] {
     width: 100%;
     max-width: 300px;
     transition: border-color 0.3s ease;
+    font-size: 1.1em;
 }
 
 input[type="text"]:focus, input[type="password"]:focus {
@@ -168,13 +196,16 @@ h1 {
     padding: 10px;
     background: #f8f9fa;
     border-radius: 5px;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .round-indicator {
-    padding: 5px 10px;
+    padding: 8px 15px;
     border-radius: 15px;
     font-size: 0.9em;
     background: #e9ecef;
+    transition: all 0.3s ease;
 }
 
 .round-indicator.completed {
@@ -188,10 +219,12 @@ h1 {
 }
 
 .feedback {
-    padding: 10px;
-    margin: 10px 0;
+    padding: 15px;
+    margin: 15px 0;
     border-radius: 5px;
-    display: none;
+    font-weight: bold;
+    text-align: center;
+    animation: fadeIn 0.3s;
 }
 
 .feedback.correct {
@@ -204,6 +237,16 @@ h1 {
     background-color: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+}
+
+.navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.navigation button {
+    min-width: 120px;
 }
 
 .leaderboard table {
@@ -226,4 +269,27 @@ h1 {
 
 .leaderboard tr:nth-child(even) {
     background-color: #f9f9f9;
+}
+
+.leaderboard tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Loading indicator */
+.loading {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #666;
+}
+
+/* Error message */
+.error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #f5c6cb;
+    text-align: center;
 }

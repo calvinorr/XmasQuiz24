@@ -8,6 +8,12 @@ export class QuizInterface {
         this.quizConfig = null;
         this.currentRoundId = 1;
         this.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
+
+        // Try to restore team from localStorage
+        const storedTeam = localStorage.getItem('currentTeam');
+        if (storedTeam) {
+            this.currentTeam = storedTeam;
+        }
     }
 
     initialize() {
@@ -15,7 +21,6 @@ export class QuizInterface {
         const roundMatch = window.location.pathname.match(/round(\d+)\.html/);
         if (roundMatch) {
             this.currentRoundId = parseInt(roundMatch[1]);
-            this.initializeRoundEventListeners();
         }
 
         import('./quizConfig.js').then(module => {
@@ -23,13 +28,20 @@ export class QuizInterface {
             this.quizState = new QuizState();
             this.quizConfig = quizConfig;
             this.updateRoundIndicators = updateRoundIndicators;
-            this.initializeEventListeners();
+
+            // Initialize UI based on current page
+            if (roundMatch) {
+                this.initializeRoundPage();
+            } else {
+                this.initializeLoginPage();
+            }
         }).catch(error => {
             console.error('Error loading quiz configuration:', error);
+            this.showError('Failed to load quiz configuration. Please refresh the page.');
         });
     }
 
-    initializeEventListeners() {
+    initializeLoginPage() {
         const loginForm = document.getElementById('login-form');
         const adminLink = document.getElementById('admin-link');
         const logoutBtn = document.getElementById('logout-btn');
@@ -55,15 +67,26 @@ export class QuizInterface {
         }
     }
 
-    initializeRoundEventListeners() {
-        document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.handleOptionSelect(btn));
-        });
+    initializeRoundPage() {
+        if (!this.currentTeam) {
+            window.location.href = this.basePath + '/index.html';
+            return;
+        }
 
-        document.querySelectorAll('.submit-answer').forEach(btn => {
-            btn.addEventListener('click', () => this.handleAnswerSubmit());
-        });
+        // Update team info
+        const team = this.quizState.getTeamProgress(this.currentTeam);
+        if (!team) {
+            window.location.href = this.basePath + '/index.html';
+            return;
+        }
 
+        const currentTeamElement = document.getElementById('current-team');
+        const currentScoreElement = document.getElementById('current-score');
+        
+        if (currentTeamElement) currentTeamElement.textContent = this.currentTeam;
+        if (currentScoreElement) currentScoreElement.textContent = team.score;
+
+        // Initialize question navigation
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         
@@ -74,8 +97,24 @@ export class QuizInterface {
             nextBtn.addEventListener('click', () => this.nextQuestion());
         }
 
+        // Initialize option buttons and submit buttons
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.handleOptionSelect(btn));
+        });
+
+        document.querySelectorAll('.submit-answer').forEach(btn => {
+            btn.addEventListener('click', () => this.handleAnswerSubmit());
+        });
+
         // Initialize progress
         this.updateProgress(1);
+    }
+
+    showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        document.body.insertBefore(errorDiv, document.body.firstChild);
     }
 
     handleLogin() {
@@ -96,21 +135,11 @@ export class QuizInterface {
         try {
             const team = this.quizState.addTeam(teamName, password);
             this.currentTeam = teamName;
-            this.loadTeamProgress(team);
+            localStorage.setItem('currentTeam', teamName);
+            window.location.href = `${this.basePath}/rounds/round${team.currentRound}.html`;
         } catch (error) {
             alert(error.message);
         }
-    }
-
-    loadTeamProgress(team) {
-        const currentTeamElement = document.getElementById('current-team');
-        const currentScoreElement = document.getElementById('current-score');
-        
-        if (currentTeamElement) currentTeamElement.textContent = this.currentTeam;
-        if (currentScoreElement) currentScoreElement.textContent = team.score;
-
-        // Redirect to the appropriate round
-        window.location.href = `${this.basePath}/rounds/round${team.currentRound}.html`;
     }
 
     handleOptionSelect(button) {
@@ -152,8 +181,14 @@ export class QuizInterface {
             if (scoreElement) scoreElement.textContent = team.score;
         }
 
-        // Disable the submit button but not the options
+        // Disable the submit button and options
         activeQuestion.querySelector('.submit-answer').disabled = true;
+        activeQuestion.querySelectorAll('.option-btn').forEach(btn => {
+            btn.disabled = true;
+            if (btn.dataset.answer === this.selectedAnswer) {
+                btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+            }
+        });
 
         // Enable next button after answering
         const nextBtn = document.getElementById('next-btn');
@@ -179,7 +214,6 @@ export class QuizInterface {
         };
 
         const correctAnswer = answers[roundId]?.[questionId];
-        console.log(`Checking answer for round ${roundId}, question ${questionId}: given ${answer}, correct ${correctAnswer}`);
         return correctAnswer === answer;
     }
 
@@ -197,7 +231,6 @@ export class QuizInterface {
         // Insert feedback after the options but before the submit button
         const submitButton = questionElement.querySelector('.submit-answer');
         submitButton.parentNode.insertBefore(feedback, submitButton);
-        feedback.style.display = 'block';
     }
 
     previousQuestion() {
@@ -274,6 +307,7 @@ export class QuizInterface {
         this.currentTeam = '';
         this.isAdmin = false;
         this.selectedAnswer = null;
+        localStorage.removeItem('currentTeam');
         document.querySelector('.admin-controls').style.display = 'none';
         document.querySelector('.leaderboard')?.classList.add('hidden');
         document.querySelector('.quiz-container')?.classList.add('hidden');
