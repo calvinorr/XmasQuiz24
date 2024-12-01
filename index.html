@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Christmas Quiz 2024 - Team Edition</title>
     <link rel="stylesheet" href="css/styles.css">
-    <script>
-        // Handle base path for GitHub Pages
-        window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
-    </script>
 </head>
 <body>
     <h1>🎄 Family Christmas Quiz 2024 🎅</h1>
@@ -16,25 +12,20 @@
     <!-- Login Section -->
     <div class="login-section container">
         <h2>Team Login</h2>
-        <form id="login-form">
+        <div class="login-form">
             <input type="text" id="team-name" placeholder="Enter your team name" required>
             <input type="password" id="team-password" placeholder="Choose a team password" required>
-            <button type="submit">Start Quiz</button>
-        </form>
-        <p>Quiz Master? <a href="#" id="admin-link">Login here</a></p>
+            <button onclick="window.quizInterface?.handleLogin()">Start Quiz</button>
+        </div>
+        <p>Quiz Master? <a href="#" onclick="window.quizInterface?.showAdminLogin(); return false;">Login here</a></p>
     </div>
 
-    <!-- Round Introduction -->
-    <div class="round-intro container hidden">
-        <h2>Round <span id="round-number">1</span></h2>
-        <h3 id="round-title"></h3>
-        <p id="round-description"></p>
-        <button id="start-round-btn">Start Round</button>
-    </div>
-
-    <!-- Quiz Content Container -->
-    <div id="quiz-content" class="hidden">
-        <!-- Round content will be loaded here -->
+    <!-- Admin Controls -->
+    <div class="admin-controls container hidden">
+        <h2>Quiz Master Controls</h2>
+        <button onclick="window.quizInterface?.resetAllScores()">Reset All Scores</button>
+        <button onclick="window.quizInterface?.showLeaderboard()">View Leaderboard</button>
+        <button onclick="window.quizInterface?.exportScores()">Export Scores</button>
     </div>
 
     <!-- Leaderboard -->
@@ -51,48 +42,17 @@
             <tbody id="leaderboard-body">
             </tbody>
         </table>
-        <button id="logout-btn">Exit Quiz</button>
-    </div>
-
-    <!-- Admin Controls -->
-    <div class="admin-controls container" style="display: none;">
-        <h2>Quiz Master Controls</h2>
-        <button id="reset-scores-btn">Reset All Scores</button>
-        <button id="view-leaderboard-btn">View Leaderboard</button>
-        <button id="export-scores-btn">Export Scores</button>
+        <button onclick="window.quizInterface?.handleLogout()">Exit Quiz</button>
     </div>
 
     <script type="module">
-        // Initialize event listeners for the start round button
+        import { QuizInterface } from './js/quizInterface.js';
+        
+        // Initialize quiz interface when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            const startRoundBtn = document.getElementById('start-round-btn');
-            if (startRoundBtn) {
-                startRoundBtn.addEventListener('click', async () => {
-                    const { QuizState, quizConfig } = await import('./js/quizConfig.js');
-                    const quizState = new QuizState();
-                    const teamName = document.getElementById('current-team')?.textContent;
-                    const team = quizState.getTeamProgress(teamName);
-                    
-                    if (team && quizConfig.rounds[team.currentRound - 1]) {
-                        window.location.href = `${window.basePath}/rounds/round${team.currentRound}.html`;
-                    }
-                });
-            }
-
-            // Admin button event listeners
-            document.getElementById('reset-scores-btn')?.addEventListener('click', () => {
-                window.quizInterface?.quizState.resetAllScores();
-            });
-
-            document.getElementById('view-leaderboard-btn')?.addEventListener('click', () => {
-                window.quizInterface?.showLeaderboard();
-            });
-
-            document.getElementById('export-scores-btn')?.addEventListener('click', () => {
-                window.quizInterface?.quizState.exportScores();
-            });
+            window.quizInterface = new QuizInterface();
+            window.quizInterface.initialize();
         });
     </script>
-    <script type="module" src="js/quizInterface.js"></script>
 </body>
 </html>

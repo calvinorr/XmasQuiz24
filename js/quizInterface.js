@@ -8,119 +8,59 @@ export class QuizInterface {
         this.quizConfig = null;
         this.currentRoundId = 1;
         this.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
-        this.timer = null;
-        this.timeLeft = 30; // 30 seconds per question
-
-        // Create audio elements
-        this.correctSound = new Audio(`${this.basePath}/sounds/correct.mp3`);
-        this.incorrectSound = new Audio(`${this.basePath}/sounds/incorrect.mp3`);
-        this.tickSound = new Audio(`${this.basePath}/sounds/tick.mp3`);
 
         // Try to restore team from localStorage
         const storedTeam = localStorage.getItem('currentTeam');
         if (storedTeam) {
             this.currentTeam = storedTeam;
         }
-
-        // Bind keyboard navigation
-        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
     initialize() {
-        // First determine if we're on a round page
-        const roundMatch = window.location.pathname.match(/round(\d+)\.html/);
-        if (roundMatch) {
-            this.currentRoundId = parseInt(roundMatch[1]);
-        }
-
         import('./quizConfig.js').then(module => {
-            const { QuizState, quizConfig, updateRoundIndicators } = module;
+            const { QuizState, quizConfig } = module;
             this.quizState = new QuizState();
             this.quizConfig = quizConfig;
-            this.updateRoundIndicators = updateRoundIndicators;
 
             // Initialize UI based on current page
-            if (roundMatch) {
+            if (window.location.pathname.includes('round')) {
                 this.initializeRoundPage();
-            } else {
-                this.initializeLoginPage();
             }
-
-            // Add keyboard navigation
-            document.addEventListener('keydown', this.handleKeyPress);
         }).catch(error => {
             console.error('Error loading quiz configuration:', error);
             this.showError('Failed to load quiz configuration. Please refresh the page.');
         });
     }
 
-    handleKeyPress(event) {
-        const activeQuestion = document.querySelector('.question.active');
-        if (!activeQuestion) return;
-
-        switch(event.key) {
-            case 'ArrowLeft':
-                document.getElementById('prev-btn')?.click();
-                break;
-            case 'ArrowRight':
-                document.getElementById('next-btn')?.click();
-                break;
-            case '1':
-            case 'a':
-            case 'A':
-                activeQuestion.querySelector('[data-answer="A"]')?.click();
-                break;
-            case '2':
-            case 'b':
-            case 'B':
-                activeQuestion.querySelector('[data-answer="B"]')?.click();
-                break;
-            case '3':
-            case 'c':
-            case 'C':
-                activeQuestion.querySelector('[data-answer="C"]')?.click();
-                break;
-            case 'Enter':
-                if (this.selectedAnswer) {
-                    activeQuestion.querySelector('.submit-answer')?.click();
-                }
-                break;
-        }
+    showError(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        document.body.insertBefore(errorDiv, document.body.firstChild);
     }
 
-    startTimer() {
-        this.timeLeft = 30;
-        this.updateTimerDisplay();
+    handleLogin() {
+        const teamName = document.getElementById('team-name')?.value;
+        const password = document.getElementById('team-password')?.value;
 
-        if (this.timer) {
-            clearInterval(this.timer);
+        if (!teamName || !password) {
+            alert('Please enter both team name and password!');
+            return;
         }
 
-        this.timer = setInterval(() => {
-            this.timeLeft--;
-            this.updateTimerDisplay();
+        if (password === 'quizmaster2024') {
+            this.isAdmin = true;
+            this.showAdminControls();
+            return;
+        }
 
-            if (this.timeLeft <= 5) {
-                this.tickSound.play().catch(() => {});
-            }
-
-            if (this.timeLeft <= 0) {
-                clearInterval(this.timer);
-                const activeQuestion = document.querySelector('.question.active');
-                if (activeQuestion && !activeQuestion.querySelector('.submit-answer').disabled) {
-                    this.handleAnswerSubmit(true); // Force submit
-                }
-            }
-        }, 1000);
-    }
-
-    updateTimerDisplay() {
-        const timerDisplay = document.querySelector('.timer-display');
-        if (timerDisplay) {
-            timerDisplay.textContent = this.timeLeft;
-            if (this.timeLeft <= 5) {
-                timerDisplay.classList.add('warning');
-            }
+        try {
+            const team = this.quizState.addTeam(teamName, password);
+            this.currentTeam = teamName;
+            localStorage.setItem('currentTeam', teamName);
+            window.location.href = `${this.basePath}/rounds/round${team.currentRound}.html`;
+        } catch (error) {
+            alert(error.message);
         }
     }
 
@@ -137,34 +77,11 @@ export class QuizInterface {
             return;
         }
 
-        // Add timer display
-        const roundInfo = document.querySelector('.round-info');
-        if (roundInfo) {
-            const timerDiv = document.createElement('div');
-            timerDiv.className = 'timer-container';
-            timerDiv.innerHTML = `
-                <div class="timer-label">Time Remaining:</div>
-                <div class="timer-display">30</div>
-            `;
-            roundInfo.appendChild(timerDiv);
-        }
-
         const currentTeamElement = document.getElementById('current-team');
         const currentScoreElement = document.getElementById('current-score');
         
         if (currentTeamElement) currentTeamElement.textContent = this.currentTeam;
         if (currentScoreElement) currentScoreElement.textContent = team.score;
-
-        // Initialize question navigation
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.previousQuestion());
-        }
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.nextQuestion());
-        }
 
         // Initialize option buttons and submit buttons
         document.querySelectorAll('.option-btn').forEach(btn => {
@@ -175,18 +92,37 @@ export class QuizInterface {
             btn.addEventListener('click', () => this.handleAnswerSubmit());
         });
 
-        // Initialize progress and timer
+        // Initialize navigation
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.previousQuestion());
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.nextQuestion());
+        }
+
+        // Initialize progress
         this.updateProgress(1);
-        this.startTimer();
     }
 
-    handleAnswerSubmit(isTimeout = false) {
-        if (!this.selectedAnswer && !isTimeout) {
+    handleOptionSelect(button) {
+        const optionsContainer = button.closest('.options');
+        if (optionsContainer) {
+            optionsContainer.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            button.classList.add('selected');
+            this.selectedAnswer = button.dataset.answer;
+        }
+    }
+
+    handleAnswerSubmit() {
+        if (!this.selectedAnswer) {
             alert('Please select an answer first!');
             return;
         }
-
-        clearInterval(this.timer);
 
         const activeQuestion = document.querySelector('.question.active');
         if (!activeQuestion) return;
@@ -194,16 +130,8 @@ export class QuizInterface {
         const questionId = parseInt(activeQuestion.dataset.questionId);
         if (!questionId) return;
 
-        const isCorrect = this.selectedAnswer ? this.checkAnswer(this.currentRoundId, questionId, this.selectedAnswer) : false;
-        
-        // Play sound effect
-        if (isCorrect) {
-            this.correctSound.play().catch(() => {});
-        } else {
-            this.incorrectSound.play().catch(() => {});
-        }
-
-        this.showAnswerFeedback(isCorrect, activeQuestion, isTimeout);
+        const isCorrect = this.checkAnswer(this.currentRoundId, questionId, this.selectedAnswer);
+        this.showAnswerFeedback(isCorrect, activeQuestion);
         
         if (isCorrect) {
             this.quizState.updateTeamScore(this.currentTeam, this.currentRoundId, questionId, true);
@@ -216,23 +144,13 @@ export class QuizInterface {
         activeQuestion.querySelector('.submit-answer').disabled = true;
         activeQuestion.querySelectorAll('.option-btn').forEach(btn => {
             btn.disabled = true;
-            if (this.selectedAnswer && btn.dataset.answer === this.selectedAnswer) {
+            if (btn.dataset.answer === this.selectedAnswer) {
                 btn.classList.add(isCorrect ? 'correct' : 'incorrect');
             }
         });
-
-        // Show correct answer if wrong or timeout
-        if (!isCorrect) {
-            const correctAnswer = this.getCorrectAnswer(this.currentRoundId, questionId);
-            activeQuestion.querySelector(`[data-answer="${correctAnswer}"]`)?.classList.add('correct');
-        }
-
-        // Enable next button after answering
-        const nextBtn = document.getElementById('next-btn');
-        if (nextBtn) nextBtn.disabled = false;
     }
 
-    getCorrectAnswer(roundId, questionId) {
+    checkAnswer(roundId, questionId, answer) {
         const answers = {
             1: { // Round 1 - Picture Round
                 1: "A", // The Nutcracker
@@ -249,7 +167,34 @@ export class QuizInterface {
                 5: "B"  // Eggnog
             }
         };
-        return answers[roundId]?.[questionId];
+
+        return answers[roundId]?.[questionId] === answer;
+    }
+
+    showAnswerFeedback(isCorrect, questionElement) {
+        const feedback = document.createElement('div');
+        feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
+        feedback.textContent = isCorrect ? 'Correct!' : 'Incorrect!';
+        
+        // Insert feedback after the options but before the submit button
+        const submitButton = questionElement.querySelector('.submit-answer');
+        submitButton.parentNode.insertBefore(feedback, submitButton);
+    }
+
+    previousQuestion() {
+        const currentQuestion = document.querySelector('.question.active');
+        const prevQuestion = currentQuestion.previousElementSibling;
+        
+        if (prevQuestion && prevQuestion.classList.contains('question')) {
+            currentQuestion.classList.remove('active');
+            prevQuestion.classList.add('active');
+            
+            const questionNumber = parseInt(prevQuestion.dataset.questionId);
+            document.getElementById('prev-btn').style.display = questionNumber === 1 ? 'none' : 'inline';
+            document.getElementById('next-btn').textContent = 'Next';
+            
+            this.updateProgress(questionNumber);
+        }
     }
 
     nextQuestion() {
@@ -267,40 +212,62 @@ export class QuizInterface {
             document.getElementById('next-btn').textContent = questionNumber === totalQuestions ? 'Finish Round' : 'Next';
             
             this.updateProgress(questionNumber);
-            this.startTimer();
         } else {
-            // Show confirmation dialog before finishing round
-            if (confirm('Are you sure you want to finish this round?')) {
-                // Show loading animation
-                this.showLoading();
-                
-                // Complete round
-                this.quizState.completeRound(this.currentTeam, this.currentRoundId);
-                
-                // Navigate to next round after a short delay
-                setTimeout(() => {
-                    window.location.href = `${this.basePath}/rounds/round${this.currentRoundId + 1}.html`;
-                }, 1000);
-            }
+            // Complete round
+            this.quizState.completeRound(this.currentTeam, this.currentRoundId);
+            window.location.href = `${this.basePath}/rounds/round${this.currentRoundId + 1}.html`;
         }
     }
 
-    showLoading() {
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'loading-overlay';
-        loadingDiv.innerHTML = `
-            <div class="loading-spinner"></div>
-            <div class="loading-text">Loading next round...</div>
-        `;
-        document.body.appendChild(loadingDiv);
+    updateProgress(questionNumber) {
+        const totalQuestions = document.querySelectorAll('.question').length;
+        const progress = (questionNumber / totalQuestions) * 100;
+        document.getElementById('quiz-progress').style.width = `${progress}%`;
     }
 
-    // ... (rest of the class implementation remains the same)
-}
+    showAdminControls() {
+        document.querySelector('.login-section')?.classList.add('hidden');
+        document.querySelector('.admin-controls')?.classList.remove('hidden');
+        this.showLeaderboard();
+    }
 
-// Initialize quiz interface when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    const quizInterface = new QuizInterface();
-    quizInterface.initialize();
-    window.quizInterface = quizInterface;
-});
+    showLeaderboard() {
+        const leaderboard = this.quizState.getLeaderboard();
+        const tbody = document.getElementById('leaderboard-body');
+        if (tbody) {
+            tbody.innerHTML = leaderboard
+                .map((team, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${team.name}</td>
+                        <td>${team.score}</td>
+                    </tr>
+                `).join('');
+        }
+
+        document.querySelector('.leaderboard')?.classList.remove('hidden');
+    }
+
+    handleLogout() {
+        this.currentTeam = '';
+        this.isAdmin = false;
+        this.selectedAnswer = null;
+        localStorage.removeItem('currentTeam');
+        
+        document.querySelector('.admin-controls')?.classList.add('hidden');
+        document.querySelector('.leaderboard')?.classList.add('hidden');
+        document.querySelector('.login-section')?.classList.remove('hidden');
+        
+        const teamNameInput = document.getElementById('team-name');
+        const teamPasswordInput = document.getElementById('team-password');
+        if (teamNameInput) teamNameInput.value = '';
+        if (teamPasswordInput) teamPasswordInput.value = '';
+    }
+
+    showAdminLogin() {
+        const teamNameInput = document.getElementById('team-name');
+        const teamPasswordInput = document.getElementById('team-password');
+        if (teamNameInput) teamNameInput.value = 'Quiz Master';
+        if (teamPasswordInput) teamPasswordInput.focus();
+    }
+}
