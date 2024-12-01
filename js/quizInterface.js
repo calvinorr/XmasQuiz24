@@ -1,41 +1,58 @@
 // Quiz Interface Module
-import { QuizState, quizConfig, updateProgress, updateRoundIndicators } from './quizConfig.js';
-
-class QuizInterface {
+export class QuizInterface {
     constructor() {
-        this.quizState = new QuizState();
+        this.quizState = null;
         this.currentTeam = '';
         this.isAdmin = false;
         this.selectedAnswer = null;
-        this.initializeEventListeners();
+    }
+
+    initialize() {
+        import('./quizConfig.js').then(module => {
+            const { QuizState } = module;
+            this.quizState = new QuizState();
+            this.initializeEventListeners();
+        }).catch(error => {
+            console.error('Error loading quiz configuration:', error);
+        });
     }
 
     initializeEventListeners() {
-        document.getElementById('login-form')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleLogin();
-        });
+        const loginForm = document.getElementById('login-form');
+        const adminLink = document.getElementById('admin-link');
+        const logoutBtn = document.getElementById('logout-btn');
 
-        document.getElementById('admin-link')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showAdminLogin();
-        });
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleLogin();
+            });
+        }
 
-        document.getElementById('logout-btn')?.addEventListener('click', () => {
-            this.handleLogout();
-        });
+        if (adminLink) {
+            adminLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showAdminLogin();
+            });
+        }
+
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                this.handleLogout();
+            });
+        }
     }
 
     handleLogin() {
-        const teamName = document.getElementById('team-name').value;
-        const password = document.getElementById('team-password').value;
+        const teamName = document.getElementById('team-name')?.value;
+        const password = document.getElementById('team-password')?.value;
 
         if (!teamName || !password) {
             alert('Please enter both team name and password!');
             return;
         }
 
-        if (password === quizConfig.adminPassword) {
+        if (password === 'quizmaster2024') {
             this.isAdmin = true;
             this.showAdminControls();
             return;
@@ -51,28 +68,30 @@ class QuizInterface {
     }
 
     loadTeamProgress(team) {
-        document.getElementById('current-team').textContent = this.currentTeam;
-        document.getElementById('current-score').textContent = team.score;
+        const currentTeamElement = document.getElementById('current-team');
+        const currentScoreElement = document.getElementById('current-score');
+        
+        if (currentTeamElement) currentTeamElement.textContent = this.currentTeam;
+        if (currentScoreElement) currentScoreElement.textContent = team.score;
         
         const roundStatus = this.quizState.getRoundStatus(this.currentTeam, team.currentRound);
         if (roundStatus) {
             this.loadRound(team.currentRound);
-            updateRoundIndicators(team.currentRound, team.roundsCompleted);
+            this.updateRoundIndicators(team.currentRound, team.roundsCompleted);
         }
     }
 
     async loadRound(roundId) {
-        const round = quizConfig.rounds.find(r => r.id === roundId);
-        if (!round) return;
-
         try {
-            const response = await fetch(round.path);
+            const response = await fetch(`rounds/round${roundId}.html`);
             const html = await response.text();
-            document.getElementById('quiz-content').innerHTML = html;
-            
-            this.initializeRoundEventListeners();
-            document.getElementById('round-title').textContent = round.title;
-            document.getElementById('round-description').textContent = round.description;
+            const quizContent = document.getElementById('quiz-content');
+            if (quizContent) {
+                quizContent.innerHTML = html;
+                quizContent.classList.remove('hidden');
+                document.querySelector('.login-section')?.classList.add('hidden');
+                this.initializeRoundEventListeners();
+            }
         } catch (error) {
             console.error('Error loading round:', error);
             alert('Error loading round content');
@@ -90,12 +109,9 @@ class QuizInterface {
     }
 
     handleOptionSelect(button) {
-        // Remove selection from other options
         button.parentElement.querySelectorAll('.option-btn').forEach(btn => {
             btn.classList.remove('selected');
         });
-        
-        // Select this option
         button.classList.add('selected');
         this.selectedAnswer = button.dataset.answer;
     }
@@ -106,22 +122,24 @@ class QuizInterface {
             return;
         }
 
-        const questionId = document.querySelector('.question.active').dataset.questionId;
-        const roundId = quizConfig.rounds.find(r => r.path === window.location.pathname)?.id;
+        const activeQuestion = document.querySelector('.question.active');
+        if (!activeQuestion) return;
+
+        const questionId = activeQuestion.dataset.questionId;
+        const roundId = parseInt(window.location.pathname.match(/round(\d+)\.html/)?.[1] || '1');
         
         if (!roundId || !questionId) return;
 
         const isCorrect = this.checkAnswer(roundId, questionId, this.selectedAnswer);
-        this.showAnswerFeedback(isCorrect);
+        this.showAnswerFeedback(isCorrect, activeQuestion);
         this.quizState.updateTeamScore(this.currentTeam, roundId, questionId, isCorrect);
         
-        // Disable options after submission
-        document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
-        document.querySelector('.submit-answer').disabled = true;
+        activeQuestion.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+        activeQuestion.querySelector('.submit-answer').disabled = true;
 
-        // Update score display
         const team = this.quizState.getTeamProgress(this.currentTeam);
-        document.getElementById('current-score').textContent = team.score;
+        const scoreElement = document.getElementById('current-score');
+        if (scoreElement) scoreElement.textContent = team.score;
     }
 
     checkAnswer(roundId, questionId, answer) {
@@ -129,35 +147,38 @@ class QuizInterface {
         return false;
     }
 
-    showAnswerFeedback(isCorrect) {
+    showAnswerFeedback(isCorrect, questionElement) {
         const feedback = document.createElement('div');
         feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
         feedback.textContent = isCorrect ? 'Correct!' : 'Incorrect!';
-        
-        const questionContainer = document.querySelector('.question.active');
-        questionContainer.appendChild(feedback);
+        questionElement.appendChild(feedback);
         feedback.style.display = 'block';
     }
 
     showAdminControls() {
-        document.querySelector('.admin-controls').style.display = 'block';
-        this.showLeaderboard();
+        const adminControls = document.querySelector('.admin-controls');
+        if (adminControls) {
+            adminControls.style.display = 'block';
+            this.showLeaderboard();
+        }
     }
 
     showLeaderboard() {
         const leaderboard = this.quizState.getLeaderboard();
         const tbody = document.getElementById('leaderboard-body');
-        tbody.innerHTML = leaderboard
-            .map((team, index) => `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${team.name}</td>
-                    <td>${team.score}</td>
-                </tr>
-            `).join('');
+        if (tbody) {
+            tbody.innerHTML = leaderboard
+                .map((team, index) => `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${team.name}</td>
+                        <td>${team.score}</td>
+                    </tr>
+                `).join('');
+        }
 
-        document.querySelector('.leaderboard').classList.remove('hidden');
-        document.querySelector('.quiz-container').classList.add('hidden');
+        document.querySelector('.leaderboard')?.classList.remove('hidden');
+        document.querySelector('.quiz-container')?.classList.add('hidden');
     }
 
     handleLogout() {
@@ -165,20 +186,27 @@ class QuizInterface {
         this.isAdmin = false;
         this.selectedAnswer = null;
         document.querySelector('.admin-controls').style.display = 'none';
-        document.querySelector('.leaderboard').classList.add('hidden');
-        document.querySelector('.quiz-container').classList.add('hidden');
-        document.querySelector('.login-section').classList.remove('hidden');
-        document.getElementById('team-name').value = '';
-        document.getElementById('team-password').value = '';
+        document.querySelector('.leaderboard')?.classList.add('hidden');
+        document.querySelector('.quiz-container')?.classList.add('hidden');
+        document.querySelector('.login-section')?.classList.remove('hidden');
+        
+        const teamNameInput = document.getElementById('team-name');
+        const teamPasswordInput = document.getElementById('team-password');
+        if (teamNameInput) teamNameInput.value = '';
+        if (teamPasswordInput) teamPasswordInput.value = '';
     }
 
     showAdminLogin() {
-        document.getElementById('team-name').value = 'Quiz Master';
-        document.getElementById('team-password').focus();
+        const teamNameInput = document.getElementById('team-name');
+        const teamPasswordInput = document.getElementById('team-password');
+        if (teamNameInput) teamNameInput.value = 'Quiz Master';
+        if (teamPasswordInput) teamPasswordInput.focus();
     }
 }
 
 // Initialize quiz interface when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.quizInterface = new QuizInterface();
+    const quizInterface = new QuizInterface();
+    quizInterface.initialize();
+    window.quizInterface = quizInterface;
 });

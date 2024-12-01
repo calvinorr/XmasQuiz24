@@ -53,23 +53,40 @@
     <!-- Admin Controls -->
     <div class="admin-controls container" style="display: none;">
         <h2>Quiz Master Controls</h2>
-        <button onclick="window.quizInterface.resetAllScores()">Reset All Scores</button>
-        <button onclick="window.quizInterface.showLeaderboard()">View Leaderboard</button>
-        <button onclick="window.quizInterface.exportScores()">Export Scores</button>
+        <button id="reset-scores-btn">Reset All Scores</button>
+        <button id="view-leaderboard-btn">View Leaderboard</button>
+        <button id="export-scores-btn">Export Scores</button>
     </div>
 
     <script type="module">
-        import { QuizState, quizConfig } from './js/quizConfig.js';
-        
         // Initialize event listeners for the start round button
-        document.getElementById('start-round-btn').addEventListener('click', () => {
-            const quizState = new QuizState();
-            const teamName = document.getElementById('current-team').textContent;
-            const team = quizState.getTeamProgress(teamName);
-            
-            if (team) {
-                window.location.href = quizConfig.rounds[team.currentRound - 1].path;
+        document.addEventListener('DOMContentLoaded', () => {
+            const startRoundBtn = document.getElementById('start-round-btn');
+            if (startRoundBtn) {
+                startRoundBtn.addEventListener('click', async () => {
+                    const { QuizState, quizConfig } = await import('./js/quizConfig.js');
+                    const quizState = new QuizState();
+                    const teamName = document.getElementById('current-team')?.textContent;
+                    const team = quizState.getTeamProgress(teamName);
+                    
+                    if (team && quizConfig.rounds[team.currentRound - 1]) {
+                        window.location.href = quizConfig.rounds[team.currentRound - 1].path;
+                    }
+                });
             }
+
+            // Admin button event listeners
+            document.getElementById('reset-scores-btn')?.addEventListener('click', () => {
+                window.quizInterface?.quizState.resetAllScores();
+            });
+
+            document.getElementById('view-leaderboard-btn')?.addEventListener('click', () => {
+                window.quizInterface?.showLeaderboard();
+            });
+
+            document.getElementById('export-scores-btn')?.addEventListener('click', () => {
+                window.quizInterface?.quizState.exportScores();
+            });
         });
     </script>
     <script type="module" src="js/quizInterface.js"></script>
