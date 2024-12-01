@@ -1,39 +1,39 @@
-// Quiz Configuration and Utilities
+// Quiz Configuration and State Management
 export const quizConfig = {
     adminPassword: 'quizmaster2024',
     rounds: [
         {
             id: 1,
             title: "Picture Round",
-            description: "Can you identify these festive images? Each question shows a Christmas-themed picture - choose the correct answer from the options provided.",
+            description: "Can you identify these festive images?",
             type: "image",
             path: "rounds/round1.html"
         },
         {
             id: 2,
             title: "Christmas Trivia",
-            description: "Test your Christmas knowledge with these trivia questions!",
+            description: "Test your Christmas knowledge!",
             type: "text",
             path: "rounds/round2.html"
         },
         {
             id: 3,
             title: "Christmas Music",
-            description: "How well do you know your Christmas songs and carols?",
+            description: "How well do you know your Christmas songs?",
             type: "text",
             path: "rounds/round3.html"
         },
         {
             id: 4,
             title: "Christmas Movies",
-            description: "Test your knowledge of classic Christmas films!",
+            description: "Test your Christmas movie knowledge!",
             type: "text",
             path: "rounds/round4.html"
         },
         {
             id: 5,
             title: "Christmas Traditions",
-            description: "Explore Christmas traditions from around the world!",
+            description: "Explore Christmas traditions!",
             type: "text",
             path: "rounds/round5.html"
         }
