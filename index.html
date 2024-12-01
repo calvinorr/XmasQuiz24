@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Family Christmas Quiz 2024 - Team Edition</title>
     <link rel="stylesheet" href="css/styles.css">
+    <script>
+        // Handle base path for GitHub Pages
+        window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
+    </script>
 </head>
 <body>
     <h1>🎄 Family Christmas Quiz 2024 🎅</h1>
@@ -70,7 +74,7 @@
                     const team = quizState.getTeamProgress(teamName);
                     
                     if (team && quizConfig.rounds[team.currentRound - 1]) {
-                        window.location.href = quizConfig.rounds[team.currentRound - 1].path;
+                        window.location.href = `${window.basePath}/rounds/round${team.currentRound}.html`;
                     }
                 });
             }

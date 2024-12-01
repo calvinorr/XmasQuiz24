@@ -7,21 +7,22 @@ export class QuizInterface {
         this.selectedAnswer = null;
         this.quizConfig = null;
         this.currentRoundId = 1;
+        this.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
     }
 
     initialize() {
+        // First determine if we're on a round page
+        const roundMatch = window.location.pathname.match(/round(\d+)\.html/);
+        if (roundMatch) {
+            this.currentRoundId = parseInt(roundMatch[1]);
+            this.initializeRoundEventListeners();
+        }
+
         import('./quizConfig.js').then(module => {
             const { QuizState, quizConfig, updateRoundIndicators } = module;
             this.quizState = new QuizState();
             this.quizConfig = quizConfig;
             this.updateRoundIndicators = updateRoundIndicators;
-            
-            // Determine current round from URL
-            const roundMatch = window.location.pathname.match(/round(\d+)\.html/);
-            if (roundMatch) {
-                this.currentRoundId = parseInt(roundMatch[1]);
-            }
-            
             this.initializeEventListeners();
         }).catch(error => {
             console.error('Error loading quiz configuration:', error);
@@ -52,8 +53,17 @@ export class QuizInterface {
                 this.handleLogout();
             });
         }
+    }
 
-        // Initialize navigation buttons
+    initializeRoundEventListeners() {
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.handleOptionSelect(btn));
+        });
+
+        document.querySelectorAll('.submit-answer').forEach(btn => {
+            btn.addEventListener('click', () => this.handleAnswerSubmit());
+        });
+
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         
@@ -64,14 +74,8 @@ export class QuizInterface {
             nextBtn.addEventListener('click', () => this.nextQuestion());
         }
 
-        // Initialize option buttons and submit buttons
-        document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.handleOptionSelect(btn));
-        });
-
-        document.querySelectorAll('.submit-answer').forEach(btn => {
-            btn.addEventListener('click', () => this.handleAnswerSubmit());
-        });
+        // Initialize progress
+        this.updateProgress(1);
     }
 
     handleLogin() {
@@ -104,31 +108,9 @@ export class QuizInterface {
         
         if (currentTeamElement) currentTeamElement.textContent = this.currentTeam;
         if (currentScoreElement) currentScoreElement.textContent = team.score;
-        
-        const roundStatus = this.quizState.getRoundStatus(this.currentTeam, team.currentRound);
-        if (roundStatus) {
-            this.loadRound(team.currentRound);
-            if (this.updateRoundIndicators) {
-                this.updateRoundIndicators(team.currentRound, team.roundsCompleted);
-            }
-        }
-    }
 
-    async loadRound(roundId) {
-        try {
-            const response = await fetch(`rounds/round${roundId}.html`);
-            const html = await response.text();
-            const quizContent = document.getElementById('quiz-content');
-            if (quizContent) {
-                quizContent.innerHTML = html;
-                quizContent.classList.remove('hidden');
-                document.querySelector('.login-section')?.classList.add('hidden');
-                this.initializeRoundEventListeners();
-            }
-        } catch (error) {
-            console.error('Error loading round:', error);
-            alert('Error loading round content');
-        }
+        // Redirect to the appropriate round
+        window.location.href = `${this.basePath}/rounds/round${team.currentRound}.html`;
     }
 
     handleOptionSelect(button) {
@@ -252,7 +234,7 @@ export class QuizInterface {
         } else {
             // Complete round
             this.quizState.completeRound(this.currentTeam, this.currentRoundId);
-            window.location.href = `round${this.currentRoundId + 1}.html`;
+            window.location.href = `${this.basePath}/rounds/round${this.currentRoundId + 1}.html`;
         }
     }
 
