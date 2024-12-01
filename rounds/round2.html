@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Round 2 - Christmas Trivia</title>
     <link rel="stylesheet" href="../css/styles.css">
-    <script>
-        // Handle base path for GitHub Pages
-        window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
-    </script>
 </head>
 <body>
     <div class="container">
@@ -88,15 +84,28 @@
         </div>
     </div>
 
+    <script>
+        // Handle base path for GitHub Pages
+        window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
+    </script>
     <script type="module">
-        import { QuizInterface } from '../js/quizInterface.js';
-        
-        // Initialize quiz interface when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            const quizInterface = new QuizInterface();
-            window.quizInterface = quizInterface;
-            quizInterface.initialize();
-        });
+        async function initializeRound() {
+            try {
+                const { QuizInterface } = await import('../js/quizInterface.js');
+                const quizInterface = new QuizInterface();
+                window.quizInterface = quizInterface;
+                await quizInterface.initialize();
+            } catch (error) {
+                console.error('Error initializing round:', error);
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = 'Error loading round. Please return to the main page and try again.';
+                document.body.insertBefore(errorDiv, document.body.firstChild);
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeRound);
     </script>
 </body>
 </html>
