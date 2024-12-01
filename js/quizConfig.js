@@ -4,7 +4,7 @@ export const quizConfig = {
     rounds: [
         {
             id: 1,
-            title: "Christmas Picture Round",
+            title: "Picture Round",
             description: "Can you identify these festive images? Each question shows a Christmas-themed picture - choose the correct answer from the options provided.",
             type: "image",
             path: "rounds/round1.html"
@@ -138,11 +138,14 @@ export class QuizState {
 
 export function updateProgress(currentQuestion, totalQuestions) {
     const progress = (currentQuestion / totalQuestions) * 100;
-    document.getElementById('quiz-progress').style.width = `${progress}%`;
+    const progressBar = document.getElementById('quiz-progress');
+    if (progressBar) {
+        progressBar.style.width = `${progress}%`;
+    }
 }
 
 export function updateRoundIndicators(currentRound, completedRounds) {
-    for (let i = 1; i <= quizConfig.rounds.length; i++) {
+    for (let i = 1; i <= 5; i++) {
         const indicator = document.getElementById(`round${i}-indicator`);
         if (!indicator) continue;
         

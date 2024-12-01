@@ -6,6 +6,7 @@ export class QuizInterface {
         this.isAdmin = false;
         this.selectedAnswer = null;
         this.quizConfig = null;
+        this.currentRoundId = 1;
     }
 
     initialize() {
@@ -14,6 +15,13 @@ export class QuizInterface {
             this.quizState = new QuizState();
             this.quizConfig = quizConfig;
             this.updateRoundIndicators = updateRoundIndicators;
+            
+            // Determine current round from URL
+            const roundMatch = window.location.pathname.match(/round(\d+)\.html/);
+            if (roundMatch) {
+                this.currentRoundId = parseInt(roundMatch[1]);
+            }
+            
             this.initializeEventListeners();
         }).catch(error => {
             console.error('Error loading quiz configuration:', error);
@@ -44,6 +52,26 @@ export class QuizInterface {
                 this.handleLogout();
             });
         }
+
+        // Initialize navigation buttons
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.previousQuestion());
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.nextQuestion());
+        }
+
+        // Initialize option buttons and submit buttons
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', () => this.handleOptionSelect(btn));
+        });
+
+        document.querySelectorAll('.submit-answer').forEach(btn => {
+            btn.addEventListener('click', () => this.handleAnswerSubmit());
+        });
     }
 
     handleLogin() {
@@ -103,38 +131,20 @@ export class QuizInterface {
         }
     }
 
-    initializeRoundEventListeners() {
-        document.querySelectorAll('.option-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.handleOptionSelect(btn));
-        });
-
-        document.querySelectorAll('.submit-answer').forEach(btn => {
-            btn.addEventListener('click', () => this.handleAnswerSubmit());
-        });
-
-        // Initialize navigation buttons
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.previousQuestion());
-        }
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.nextQuestion());
-        }
-    }
-
     handleOptionSelect(button) {
-        button.parentElement.querySelectorAll('.option-btn').forEach(btn => {
-            btn.classList.remove('selected');
-        });
-        button.classList.add('selected');
-        this.selectedAnswer = button.dataset.answer;
+        const optionsContainer = button.closest('.options');
+        if (optionsContainer) {
+            optionsContainer.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            button.classList.add('selected');
+            this.selectedAnswer = button.dataset.answer;
 
-        // Remove any existing feedback
-        const existingFeedback = button.closest('.question').querySelector('.feedback');
-        if (existingFeedback) {
-            existingFeedback.remove();
+            // Remove any existing feedback
+            const existingFeedback = button.closest('.question').querySelector('.feedback');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
         }
     }
 
@@ -147,21 +157,21 @@ export class QuizInterface {
         const activeQuestion = document.querySelector('.question.active');
         if (!activeQuestion) return;
 
-        const questionId = activeQuestion.dataset.questionId;
-        const roundId = parseInt(window.location.pathname.match(/round(\d+)\.html/)?.[1] || '1');
-        
-        if (!roundId || !questionId) return;
+        const questionId = parseInt(activeQuestion.dataset.questionId);
+        if (!questionId) return;
 
-        const isCorrect = this.checkAnswer(roundId, questionId, this.selectedAnswer);
+        const isCorrect = this.checkAnswer(this.currentRoundId, questionId, this.selectedAnswer);
         this.showAnswerFeedback(isCorrect, activeQuestion);
-        this.quizState.updateTeamScore(this.currentTeam, roundId, questionId, isCorrect);
         
+        if (isCorrect) {
+            this.quizState.updateTeamScore(this.currentTeam, this.currentRoundId, questionId, true);
+            const team = this.quizState.getTeamProgress(this.currentTeam);
+            const scoreElement = document.getElementById('current-score');
+            if (scoreElement) scoreElement.textContent = team.score;
+        }
+
         // Disable the submit button but not the options
         activeQuestion.querySelector('.submit-answer').disabled = true;
-
-        const team = this.quizState.getTeamProgress(this.currentTeam);
-        const scoreElement = document.getElementById('current-score');
-        if (scoreElement) scoreElement.textContent = team.score;
 
         // Enable next button after answering
         const nextBtn = document.getElementById('next-btn');
@@ -170,14 +180,14 @@ export class QuizInterface {
 
     checkAnswer(roundId, questionId, answer) {
         const answers = {
-            1: { // Round 1
+            1: { // Round 1 - Picture Round
                 1: "A", // The Nutcracker
                 2: "B", // Home Alone
                 3: "C", // Mistletoe
                 4: "A", // Harrods
                 5: "B"  // Gingerbread
             },
-            2: { // Round 2
+            2: { // Round 2 - Christmas Trivia
                 1: "B", // Ten lords
                 2: "B", // Germany
                 3: "C", // White Rock Beverages
@@ -186,7 +196,9 @@ export class QuizInterface {
             }
         };
 
-        return answers[roundId]?.[questionId] === answer;
+        const correctAnswer = answers[roundId]?.[questionId];
+        console.log(`Checking answer for round ${roundId}, question ${questionId}: given ${answer}, correct ${correctAnswer}`);
+        return correctAnswer === answer;
     }
 
     showAnswerFeedback(isCorrect, questionElement) {
@@ -239,9 +251,8 @@ export class QuizInterface {
             this.updateProgress(questionNumber);
         } else {
             // Complete round
-            const roundId = parseInt(window.location.pathname.match(/round(\d+)\.html/)?.[1] || '1');
-            this.quizState.completeRound(this.currentTeam, roundId);
-            window.location.href = `round${roundId + 1}.html`;
+            this.quizState.completeRound(this.currentTeam, this.currentRoundId);
+            window.location.href = `round${this.currentRoundId + 1}.html`;
         }
     }
 
