@@ -55,56 +55,75 @@
 
         async function initializeQuiz() {
             try {
-                const { QuizInterface } = await import('./js/quizInterface.js');
+                console.log('Starting initialization...');
+                const modulePath = window.basePath ? `${window.basePath}/js/quizInterface.js` : './js/quizInterface.js';
+                console.log('Loading module from:', modulePath);
+                
+                const { QuizInterface } = await import(modulePath);
+                console.log('QuizInterface loaded');
+                
                 quizInterface = new QuizInterface();
                 window.quizInterface = quizInterface;
+                console.log('QuizInterface instance created');
 
                 // Initialize the interface
                 await quizInterface.initialize();
+                console.log('Interface initialized');
 
                 // Set up event listeners after initialization
                 setupEventListeners();
+                console.log('Event listeners set up');
             } catch (error) {
-                console.error('Error initializing quiz:', error);
+                console.error('Detailed initialization error:', {
+                    message: error.message,
+                    stack: error.stack,
+                    type: error.name
+                });
                 showError('Error initializing quiz. Please try refreshing the page.');
             }
         }
 
         function setupEventListeners() {
-            // Login button
-            document.getElementById('login-btn').addEventListener('click', () => {
-                quizInterface.handleLogin();
-            });
-
-            // Admin link
-            document.getElementById('admin-link').addEventListener('click', (e) => {
-                e.preventDefault();
-                quizInterface.showAdminLogin();
-            });
-
-            // Logout button
-            document.getElementById('logout').addEventListener('click', () => {
-                quizInterface.handleLogout();
-            });
-
-            // Admin controls
-            document.getElementById('reset-scores').addEventListener('click', () => {
-                quizInterface.resetAllScores();
-            });
-
-            document.getElementById('export-scores').addEventListener('click', () => {
-                quizInterface.exportScores();
-            });
-
-            // Enter key support for login
-            document.getElementById('team-password').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && quizInterface) {
+            try {
+                // Login button
+                document.getElementById('login-btn').addEventListener('click', () => {
                     quizInterface.handleLogin();
-                }
-            });
+                });
+
+                // Admin link
+                document.getElementById('admin-link').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    quizInterface.showAdminLogin();
+                });
+
+                // Logout button
+                document.getElementById('logout').addEventListener('click', () => {
+                    quizInterface.handleLogout();
+                });
+
+                // Admin controls
+                document.getElementById('reset-scores').addEventListener('click', () => {
+                    quizInterface.resetAllScores();
+                });
+
+                document.getElementById('export-scores').addEventListener('click', () => {
+                    quizInterface.exportScores();
+                });
+
+                // Enter key support for login
+                document.getElementById('team-password').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && quizInterface) {
+                        quizInterface.handleLogin();
+                    }
+                });
+            } catch (error) {
+                console.error('Error setting up event listeners:', error);
+                showError('Error setting up quiz controls. Please refresh the page.');
+            }
         }
 
         function showError(message) {
+            console.error('Showing error:', message);
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.textContent = message;
@@ -112,7 +131,13 @@
         }
 
         // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initializeQuiz);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, starting quiz initialization...');
+            initializeQuiz().catch(error => {
+                console.error('Top-level initialization error:', error);
+                showError('Failed to start quiz. Please refresh the page.');
+            });
+        });
     </script>
 </body>
 </html>

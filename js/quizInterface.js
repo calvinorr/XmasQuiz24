@@ -8,29 +8,45 @@ export class QuizInterface {
         this.quizConfig = null;
         this.currentRoundId = 1;
         this.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
+
+        // Try to restore team from localStorage
+        const storedTeam = localStorage.getItem('currentTeam');
+        if (storedTeam) {
+            this.currentTeam = storedTeam;
+            this.isAdmin = storedTeam === 'Quiz Master';
+        }
     }
 
     async initialize() {
         try {
+            console.log('QuizInterface initializing...');
             // Determine if we're in a round or on the main page
             const isRoundPage = window.location.pathname.includes('/rounds/');
-            const modulePath = isRoundPage ? '../js/quizConfig.js' : './js/quizConfig.js';
+            const modulePath = isRoundPage ? 
+                `${this.basePath}/js/quizConfig.js`.replace('//', '/') : 
+                `${this.basePath}/js/quizConfig.js`.replace('//', '/');
 
+            console.log('Loading config from:', modulePath);
             const module = await import(modulePath);
+            console.log('Config module loaded:', module);
+
             const { QuizState, quizConfig } = module;
             this.quizState = new QuizState();
             this.quizConfig = quizConfig;
 
             // Initialize UI based on current page
             if (isRoundPage) {
+                console.log('Initializing round page');
                 this.initializeRoundPage();
             } else if (localStorage.getItem('currentTeam') === 'Quiz Master') {
+                console.log('Initializing admin view');
                 this.isAdmin = true;
                 this.showAdminControls();
             }
+            console.log('Initialization complete');
         } catch (error) {
-            console.error('Error loading quiz configuration:', error);
-            this.showError('Failed to load quiz configuration. Please refresh the page.');
+            console.error('Error during initialization:', error);
+            throw error;
         }
     }
 
