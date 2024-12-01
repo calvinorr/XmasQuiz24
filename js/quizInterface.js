@@ -111,6 +111,17 @@ export class QuizInterface {
         document.querySelectorAll('.submit-answer').forEach(btn => {
             btn.addEventListener('click', () => this.handleAnswerSubmit());
         });
+
+        // Initialize navigation buttons
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.previousQuestion());
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.nextQuestion());
+        }
     }
 
     handleOptionSelect(button) {
@@ -119,6 +130,12 @@ export class QuizInterface {
         });
         button.classList.add('selected');
         this.selectedAnswer = button.dataset.answer;
+
+        // Remove any existing feedback
+        const existingFeedback = button.closest('.question').querySelector('.feedback');
+        if (existingFeedback) {
+            existingFeedback.remove();
+        }
     }
 
     handleAnswerSubmit() {
@@ -139,25 +156,99 @@ export class QuizInterface {
         this.showAnswerFeedback(isCorrect, activeQuestion);
         this.quizState.updateTeamScore(this.currentTeam, roundId, questionId, isCorrect);
         
-        activeQuestion.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+        // Disable the submit button but not the options
         activeQuestion.querySelector('.submit-answer').disabled = true;
 
         const team = this.quizState.getTeamProgress(this.currentTeam);
         const scoreElement = document.getElementById('current-score');
         if (scoreElement) scoreElement.textContent = team.score;
+
+        // Enable next button after answering
+        const nextBtn = document.getElementById('next-btn');
+        if (nextBtn) nextBtn.disabled = false;
     }
 
     checkAnswer(roundId, questionId, answer) {
-        // This would be implemented per round with the correct answers
-        return false;
+        const answers = {
+            1: { // Round 1
+                1: "A", // The Nutcracker
+                2: "B", // Home Alone
+                3: "C", // Mistletoe
+                4: "A", // Harrods
+                5: "B"  // Gingerbread
+            },
+            2: { // Round 2
+                1: "B", // Ten lords
+                2: "B", // Germany
+                3: "C", // White Rock Beverages
+                4: "A", // Turkey
+                5: "B"  // Eggnog
+            }
+        };
+
+        return answers[roundId]?.[questionId] === answer;
     }
 
     showAnswerFeedback(isCorrect, questionElement) {
+        // Remove any existing feedback first
+        const existingFeedback = questionElement.querySelector('.feedback');
+        if (existingFeedback) {
+            existingFeedback.remove();
+        }
+
         const feedback = document.createElement('div');
         feedback.className = `feedback ${isCorrect ? 'correct' : 'incorrect'}`;
         feedback.textContent = isCorrect ? 'Correct!' : 'Incorrect!';
-        questionElement.appendChild(feedback);
+        
+        // Insert feedback after the options but before the submit button
+        const submitButton = questionElement.querySelector('.submit-answer');
+        submitButton.parentNode.insertBefore(feedback, submitButton);
         feedback.style.display = 'block';
+    }
+
+    previousQuestion() {
+        const currentQuestion = document.querySelector('.question.active');
+        const prevQuestion = currentQuestion.previousElementSibling;
+        
+        if (prevQuestion && prevQuestion.classList.contains('question')) {
+            currentQuestion.classList.remove('active');
+            prevQuestion.classList.add('active');
+            
+            const questionNumber = parseInt(prevQuestion.dataset.questionId);
+            document.getElementById('prev-btn').style.display = questionNumber === 1 ? 'none' : 'inline';
+            document.getElementById('next-btn').textContent = 'Next';
+            
+            this.updateProgress(questionNumber);
+        }
+    }
+
+    nextQuestion() {
+        const currentQuestion = document.querySelector('.question.active');
+        const nextQuestion = currentQuestion.nextElementSibling;
+        
+        if (nextQuestion && nextQuestion.classList.contains('question')) {
+            currentQuestion.classList.remove('active');
+            nextQuestion.classList.add('active');
+            
+            const questionNumber = parseInt(nextQuestion.dataset.questionId);
+            const totalQuestions = document.querySelectorAll('.question').length;
+            
+            document.getElementById('prev-btn').style.display = 'inline';
+            document.getElementById('next-btn').textContent = questionNumber === totalQuestions ? 'Finish Round' : 'Next';
+            
+            this.updateProgress(questionNumber);
+        } else {
+            // Complete round
+            const roundId = parseInt(window.location.pathname.match(/round(\d+)\.html/)?.[1] || '1');
+            this.quizState.completeRound(this.currentTeam, roundId);
+            window.location.href = `round${roundId + 1}.html`;
+        }
+    }
+
+    updateProgress(questionNumber) {
+        const totalQuestions = document.querySelectorAll('.question').length;
+        const progress = (questionNumber / totalQuestions) * 100;
+        document.getElementById('quiz-progress').style.width = `${progress}%`;
     }
 
     showAdminControls() {
