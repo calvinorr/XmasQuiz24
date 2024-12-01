@@ -98,17 +98,31 @@
 
         async function initializeRound() {
             try {
-                const { QuizInterface } = await import('../js/quizInterface.js');
+                console.log('Starting round initialization...');
+                const modulePath = `${window.basePath}/js/quizInterface.js`.replace('//', '/');
+                console.log('Loading QuizInterface from:', modulePath);
+                
+                const { QuizInterface } = await import(modulePath);
+                console.log('QuizInterface loaded');
+                
                 quizInterface = new QuizInterface();
                 window.quizInterface = quizInterface;
+                console.log('QuizInterface instance created');
+                
                 await quizInterface.initialize();
+                console.log('Round initialization complete');
             } catch (error) {
-                console.error('Error initializing round:', error);
+                console.error('Detailed error during round initialization:', {
+                    message: error.message,
+                    stack: error.stack,
+                    type: error.name
+                });
                 showError('Error loading round. Please return to the main page and try again.');
             }
         }
 
         function showError(message) {
+            console.error('Showing error:', message);
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.textContent = message;
@@ -116,7 +130,13 @@
         }
 
         // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', initializeRound);
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, starting round initialization...');
+            initializeRound().catch(error => {
+                console.error('Top-level initialization error:', error);
+                showError('Failed to start round. Please return to the main page.');
+            });
+        });
     </script>
 </body>
 </html>
