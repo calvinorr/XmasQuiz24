@@ -89,19 +89,25 @@
         window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
     </script>
     <script type="module">
+        let quizInterface = null;
+
         async function initializeRound() {
             try {
                 const { QuizInterface } = await import('../js/quizInterface.js');
-                const quizInterface = new QuizInterface();
+                quizInterface = new QuizInterface();
                 window.quizInterface = quizInterface;
                 await quizInterface.initialize();
             } catch (error) {
                 console.error('Error initializing round:', error);
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.textContent = 'Error loading round. Please return to the main page and try again.';
-                document.body.insertBefore(errorDiv, document.body.firstChild);
+                showError('Error loading round. Please return to the main page and try again.');
             }
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.insertBefore(errorDiv, document.body.firstChild);
         }
 
         // Initialize when DOM is loaded
