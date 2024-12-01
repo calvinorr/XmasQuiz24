@@ -7,7 +7,9 @@ export class QuizInterface {
         this.selectedAnswer = null;
         this.quizConfig = null;
         this.currentRoundId = 1;
-        this.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
+        
+        // Get base path from window object (set in index.html)
+        this.basePath = window.basePath || '';
 
         // Try to restore team from localStorage
         const storedTeam = localStorage.getItem('currentTeam');
@@ -148,6 +150,10 @@ export class QuizInterface {
                 btn.classList.add(isCorrect ? 'correct' : 'incorrect');
             }
         });
+
+        // Enable next button
+        const nextBtn = document.getElementById('next-btn');
+        if (nextBtn) nextBtn.disabled = false;
     }
 
     checkAnswer(roundId, questionId, answer) {
@@ -269,5 +275,18 @@ export class QuizInterface {
         const teamPasswordInput = document.getElementById('team-password');
         if (teamNameInput) teamNameInput.value = 'Quiz Master';
         if (teamPasswordInput) teamPasswordInput.focus();
+    }
+
+    resetAllScores() {
+        if (this.isAdmin && confirm('Are you sure you want to reset all scores?')) {
+            this.quizState.resetAllScores();
+            this.showLeaderboard();
+        }
+    }
+
+    exportScores() {
+        if (this.isAdmin) {
+            this.quizState.exportScores();
+        }
     }
 }

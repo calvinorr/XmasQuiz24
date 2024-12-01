@@ -12,20 +12,22 @@
     <!-- Login Section -->
     <div class="login-section container">
         <h2>Team Login</h2>
-        <div class="login-form">
-            <input type="text" id="team-name" placeholder="Enter your team name" required>
-            <input type="password" id="team-password" placeholder="Choose a team password" required>
-            <button onclick="window.quizInterface?.handleLogin()">Start Quiz</button>
-        </div>
-        <p>Quiz Master? <a href="#" onclick="window.quizInterface?.showAdminLogin(); return false;">Login here</a></p>
+        <form id="login-form" onsubmit="return false;">
+            <div class="login-form">
+                <input type="text" id="team-name" placeholder="Enter your team name" required>
+                <input type="password" id="team-password" placeholder="Choose a team password" required>
+                <button type="submit" id="start-quiz">Start Quiz</button>
+            </div>
+        </form>
+        <p>Quiz Master? <a href="#" id="admin-link">Login here</a></p>
     </div>
 
     <!-- Admin Controls -->
     <div class="admin-controls container hidden">
         <h2>Quiz Master Controls</h2>
-        <button onclick="window.quizInterface?.resetAllScores()">Reset All Scores</button>
-        <button onclick="window.quizInterface?.showLeaderboard()">View Leaderboard</button>
-        <button onclick="window.quizInterface?.exportScores()">Export Scores</button>
+        <button id="reset-scores">Reset All Scores</button>
+        <button id="view-leaderboard">View Leaderboard</button>
+        <button id="export-scores">Export Scores</button>
     </div>
 
     <!-- Leaderboard -->
@@ -42,16 +44,50 @@
             <tbody id="leaderboard-body">
             </tbody>
         </table>
-        <button onclick="window.quizInterface?.handleLogout()">Exit Quiz</button>
+        <button id="logout">Exit Quiz</button>
     </div>
 
+    <script>
+        // Handle base path for GitHub Pages
+        window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
+    </script>
     <script type="module">
         import { QuizInterface } from './js/quizInterface.js';
         
         // Initialize quiz interface when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
-            window.quizInterface = new QuizInterface();
-            window.quizInterface.initialize();
+            const quizInterface = new QuizInterface();
+            window.quizInterface = quizInterface;
+
+            // Set up event listeners
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                quizInterface.handleLogin();
+            });
+
+            document.getElementById('admin-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                quizInterface.showAdminLogin();
+            });
+
+            document.getElementById('logout').addEventListener('click', () => {
+                quizInterface.handleLogout();
+            });
+
+            document.getElementById('reset-scores').addEventListener('click', () => {
+                quizInterface.resetAllScores();
+            });
+
+            document.getElementById('view-leaderboard').addEventListener('click', () => {
+                quizInterface.showLeaderboard();
+            });
+
+            document.getElementById('export-scores').addEventListener('click', () => {
+                quizInterface.exportScores();
+            });
+
+            // Initialize the interface
+            quizInterface.initialize();
         });
     </script>
 </body>
