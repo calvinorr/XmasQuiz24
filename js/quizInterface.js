@@ -17,8 +17,9 @@ export class QuizInterface {
         }
     }
 
-    initialize() {
-        import('./quizConfig.js').then(module => {
+    async initialize() {
+        try {
+            const module = await import(`${this.basePath}/js/quizConfig.js`);
             const { QuizState, quizConfig } = module;
             this.quizState = new QuizState();
             this.quizConfig = quizConfig;
@@ -30,10 +31,10 @@ export class QuizInterface {
                 // If admin is restored from localStorage, show admin controls
                 this.showAdminControls();
             }
-        }).catch(error => {
+        } catch (error) {
             console.error('Error loading quiz configuration:', error);
             this.showError('Failed to load quiz configuration. Please refresh the page.');
-        });
+        }
     }
 
     showError(message) {

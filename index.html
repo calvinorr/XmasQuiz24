@@ -51,11 +51,9 @@
         window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
     </script>
     <script type="module">
-        import { QuizInterface } from './js/quizInterface.js';
-        
-        // Initialize quiz interface when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
+        async function initializeQuiz() {
             try {
+                const { QuizInterface } = await import('./js/quizInterface.js');
                 const quizInterface = new QuizInterface();
                 window.quizInterface = quizInterface;
 
@@ -89,7 +87,7 @@
                 });
 
                 // Initialize the interface
-                quizInterface.initialize();
+                await quizInterface.initialize();
             } catch (error) {
                 console.error('Error initializing quiz:', error);
                 const errorDiv = document.createElement('div');
@@ -97,7 +95,10 @@
                 errorDiv.textContent = 'Error initializing quiz. Please try refreshing the page.';
                 document.body.insertBefore(errorDiv, document.body.firstChild);
             }
-        });
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeQuiz);
     </script>
 </body>
 </html>
