@@ -5,12 +5,15 @@ export class QuizInterface {
         this.currentTeam = '';
         this.isAdmin = false;
         this.selectedAnswer = null;
+        this.quizConfig = null;
     }
 
     initialize() {
         import('./quizConfig.js').then(module => {
-            const { QuizState } = module;
+            const { QuizState, quizConfig, updateRoundIndicators } = module;
             this.quizState = new QuizState();
+            this.quizConfig = quizConfig;
+            this.updateRoundIndicators = updateRoundIndicators;
             this.initializeEventListeners();
         }).catch(error => {
             console.error('Error loading quiz configuration:', error);
@@ -77,7 +80,9 @@ export class QuizInterface {
         const roundStatus = this.quizState.getRoundStatus(this.currentTeam, team.currentRound);
         if (roundStatus) {
             this.loadRound(team.currentRound);
-            this.updateRoundIndicators(team.currentRound, team.roundsCompleted);
+            if (this.updateRoundIndicators) {
+                this.updateRoundIndicators(team.currentRound, team.roundsCompleted);
+            }
         }
     }
 
