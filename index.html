@@ -15,7 +15,7 @@
         <div class="login-form">
             <input type="text" id="team-name" placeholder="Enter your team name" required>
             <input type="password" id="team-password" placeholder="Choose a team password" required>
-            <button id="login-btn">Start Quiz</button>
+            <button id="login-btn" type="button">Start Quiz</button>
         </div>
         <p>Quiz Master? <a href="#" id="admin-link">Login here</a></p>
     </div>
@@ -51,50 +51,64 @@
         window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
     </script>
     <script type="module">
+        let quizInterface = null;
+
         async function initializeQuiz() {
             try {
                 const { QuizInterface } = await import('./js/quizInterface.js');
-                const quizInterface = new QuizInterface();
+                quizInterface = new QuizInterface();
                 window.quizInterface = quizInterface;
-
-                // Set up event listeners
-                document.getElementById('login-btn').addEventListener('click', () => {
-                    quizInterface.handleLogin();
-                });
-
-                document.getElementById('admin-link').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    quizInterface.showAdminLogin();
-                });
-
-                document.getElementById('logout').addEventListener('click', () => {
-                    quizInterface.handleLogout();
-                });
-
-                document.getElementById('reset-scores').addEventListener('click', () => {
-                    quizInterface.resetAllScores();
-                });
-
-                document.getElementById('export-scores').addEventListener('click', () => {
-                    quizInterface.exportScores();
-                });
-
-                // Add enter key support for login
-                document.getElementById('team-password').addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        quizInterface.handleLogin();
-                    }
-                });
 
                 // Initialize the interface
                 await quizInterface.initialize();
+
+                // Set up event listeners after initialization
+                setupEventListeners();
             } catch (error) {
                 console.error('Error initializing quiz:', error);
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.textContent = 'Error initializing quiz. Please try refreshing the page.';
-                document.body.insertBefore(errorDiv, document.body.firstChild);
+                showError('Error initializing quiz. Please try refreshing the page.');
             }
+        }
+
+        function setupEventListeners() {
+            // Login button
+            document.getElementById('login-btn').addEventListener('click', () => {
+                quizInterface.handleLogin();
+            });
+
+            // Admin link
+            document.getElementById('admin-link').addEventListener('click', (e) => {
+                e.preventDefault();
+                quizInterface.showAdminLogin();
+            });
+
+            // Logout button
+            document.getElementById('logout').addEventListener('click', () => {
+                quizInterface.handleLogout();
+            });
+
+            // Admin controls
+            document.getElementById('reset-scores').addEventListener('click', () => {
+                quizInterface.resetAllScores();
+            });
+
+            document.getElementById('export-scores').addEventListener('click', () => {
+                quizInterface.exportScores();
+            });
+
+            // Enter key support for login
+            document.getElementById('team-password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && quizInterface) {
+                    quizInterface.handleLogin();
+                }
+            });
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.insertBefore(errorDiv, document.body.firstChild);
         }
 
         // Initialize when DOM is loaded
