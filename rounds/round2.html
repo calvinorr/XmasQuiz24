@@ -88,6 +88,15 @@
         </div>
     </div>
 
-    <script type="module" src="../js/quizInterface.js"></script>
+    <script type="module">
+        import { QuizInterface } from '../js/quizInterface.js';
+        
+        // Initialize quiz interface when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizInterface = new QuizInterface();
+            window.quizInterface = quizInterface;
+            quizInterface.initialize();
+        });
+    </script>
 </body>
 </html>
