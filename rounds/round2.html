@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Round 2 - Christmas Trivia</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="team-info">
+            <h3>Team: <span id="current-team"></span></h3>
+            <p>Current Score: <span id="current-score">0</span></p>
+        </div>
+
+        <div class="round-info">
+            <h2>Round 2: Christmas Trivia</h2>
+            <div class="rounds-nav">
+                <span class="round-indicator completed" id="round1-indicator">Round 1</span>
+                <span class="round-indicator current" id="round2-indicator">Round 2</span>
+                <span class="round-indicator" id="round3-indicator">Round 3</span>
+                <span class="round-indicator" id="round4-indicator">Round 4</span>
+                <span class="round-indicator" id="round5-indicator">Round 5</span>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress" id="quiz-progress"></div>
+        </div>
+
+        <div class="question active" data-question-id="1">
+            <h3>Question 1: In the song 'The Twelve Days of Christmas,' how many lords are leaping?</h3>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Eight</button>
+                <button class="option-btn" data-answer="B">B) Ten</button>
+                <button class="option-btn" data-answer="C">C) Twelve</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="2">
+            <h3>Question 2: Which country started the tradition of putting up Christmas trees?</h3>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) United States</button>
+                <button class="option-btn" data-answer="B">B) Germany</button>
+                <button class="option-btn" data-answer="C">C) England</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="3">
+            <h3>Question 3: What was the first company to use Santa Claus in advertising?</h3>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Coca-Cola</button>
+                <button class="option-btn" data-answer="B">B) Pepsi</button>
+                <button class="option-btn" data-answer="C">C) White Rock Beverages</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="4">
+            <h3>Question 4: In which modern-day country was Saint Nicholas born?</h3>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Turkey</button>
+                <button class="option-btn" data-answer="B">B) Greece</button>
+                <button class="option-btn" data-answer="C">C) Italy</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="5">
+            <h3>Question 5: What Christmas beverage is also known as 'Milk Punch'?</h3>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Hot Chocolate</button>
+                <button class="option-btn" data-answer="B">B) Eggnog</button>
+                <button class="option-btn" data-answer="C">C) Mulled Wine</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="navigation">
+            <button onclick="previousQuestion()" id="prev-btn" style="display: none;">Previous</button>
+            <button onclick="nextQuestion()" id="next-btn">Next</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { QuizState, updateProgress, updateRoundIndicators } from '../js/quizConfig.js';
+
+        const answers = {
+            1: "B", // Ten lords a-leaping
+            2: "B", // Germany
+            3: "C", // White Rock Beverages
+            4: "A", // Turkey
+            5: "B"  // Eggnog
+        };
+
+        let currentQuestion = 1;
+        const totalQuestions = Object.keys(answers).length;
+
+        function showQuestion(num) {
+            document.querySelectorAll('.question').forEach(q => {
+                q.classList.remove('active');
+            });
+            document.querySelector(`[data-question-id="${num}"]`).classList.add('active');
+            
+            document.getElementById('prev-btn').style.display = num === 1 ? 'none' : 'inline';
+            document.getElementById('next-btn').textContent = num === totalQuestions ? 'Finish Round' : 'Next';
+            
+            updateProgress(num, totalQuestions);
+        }
+
+        window.previousQuestion = () => {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        };
+
+        window.nextQuestion = () => {
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else {
+                // Complete round
+                const quizState = new QuizState();
+                const teamName = document.getElementById('current-team').textContent;
+                quizState.completeRound(teamName, 2);
+                window.location.href = '../rounds/round3.html';
+            }
+        };
+
+        // Initialize progress
+        updateProgress(1, totalQuestions);
+    </script>
+</body>
+</html>

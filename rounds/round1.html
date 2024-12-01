@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Round 1 - Christmas Picture Quiz</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="team-info">
+            <h3>Team: <span id="current-team"></span></h3>
+            <p>Current Score: <span id="current-score">0</span></p>
+        </div>
+
+        <div class="round-info">
+            <h2>Round 1: Christmas Picture Quiz</h2>
+            <div class="rounds-nav">
+                <span class="round-indicator current" id="round1-indicator">Round 1</span>
+                <span class="round-indicator" id="round2-indicator">Round 2</span>
+                <span class="round-indicator" id="round3-indicator">Round 3</span>
+                <span class="round-indicator" id="round4-indicator">Round 4</span>
+                <span class="round-indicator" id="round5-indicator">Round 5</span>
+            </div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress" id="quiz-progress"></div>
+        </div>
+
+        <div class="question active" data-question-id="1">
+            <h3>Question 1: What famous Christmas ballet is this scene from?</h3>
+            <img src="../images/round1/nutcracker.jpg" alt="Ballet Scene">
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) The Nutcracker</button>
+                <button class="option-btn" data-answer="B">B) Swan Lake</button>
+                <button class="option-btn" data-answer="C">C) Sleeping Beauty</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="2">
+            <h3>Question 2: Which Christmas movie is this iconic scene from?</h3>
+            <img src="../images/round1/home-alone.jpg" alt="Movie Scene">
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Elf</button>
+                <button class="option-btn" data-answer="B">B) Home Alone</button>
+                <button class="option-btn" data-answer="C">C) The Santa Clause</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="3">
+            <h3>Question 3: What traditional Christmas decoration is this?</h3>
+            <img src="../images/round1/mistletoe.jpg" alt="Christmas Decoration">
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Holly</button>
+                <button class="option-btn" data-answer="B">B) Ivy</button>
+                <button class="option-btn" data-answer="C">C) Mistletoe</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="4">
+            <h3>Question 4: Which famous department store's Christmas window display is this?</h3>
+            <img src="../images/round1/harrods.jpg" alt="Store Window Display">
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Harrods</button>
+                <button class="option-btn" data-answer="B">B) Selfridges</button>
+                <button class="option-btn" data-answer="C">C) Macy's</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="5">
+            <h3>Question 5: What type of traditional Christmas cookie is shown here?</h3>
+            <img src="../images/round1/gingerbread.jpg" alt="Christmas Cookie">
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Sugar Cookie</button>
+                <button class="option-btn" data-answer="B">B) Gingerbread</button>
+                <button class="option-btn" data-answer="C">C) Shortbread</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="navigation">
+            <button onclick="previousQuestion()" id="prev-btn" style="display: none;">Previous</button>
+            <button onclick="nextQuestion()" id="next-btn">Next</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { QuizState, updateProgress, updateRoundIndicators } from '../js/quizConfig.js';
+
+        const answers = {
+            1: "A", // The Nutcracker
+            2: "B", // Home Alone
+            3: "C", // Mistletoe
+            4: "A", // Harrods
+            5: "B"  // Gingerbread
+        };
+
+        let currentQuestion = 1;
+        const totalQuestions = Object.keys(answers).length;
+
+        function showQuestion(num) {
+            document.querySelectorAll('.question').forEach(q => {
+                q.classList.remove('active');
+            });
+            document.querySelector(`[data-question-id="${num}"]`).classList.add('active');
+            
+            document.getElementById('prev-btn').style.display = num === 1 ? 'none' : 'inline';
+            document.getElementById('next-btn').textContent = num === totalQuestions ? 'Finish Round' : 'Next';
+            
+            updateProgress(num, totalQuestions);
+        }
+
+        window.previousQuestion = () => {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        };
+
+        window.nextQuestion = () => {
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else {
+                // Complete round
+                const quizState = new QuizState();
+                const teamName = document.getElementById('current-team').textContent;
+                quizState.completeRound(teamName, 1);
+                window.location.href = '../rounds/round2.html';
+            }
+        };
+
+        // Initialize progress
+        updateProgress(1, totalQuestions);
+    </script>
+</body>
+</html>
