@@ -76,6 +76,7 @@ button {
     cursor: pointer;
     font-size: 1em;
     transition: all 0.3s ease;
+    margin: 10px 0;
 }
 
 button:hover {
@@ -99,6 +100,14 @@ button:disabled {
     display: block;
 }
 
+.question img {
+    max-width: 100%;
+    height: auto;
+    margin: 15px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
 .options {
     display: flex;
     flex-direction: column;
@@ -110,6 +119,7 @@ button:disabled {
     background-color: #2f5233;
     text-align: left;
     padding: 15px 20px;
+    width: 100%;
 }
 
 .option-btn:hover {
@@ -126,6 +136,14 @@ button:disabled {
 
 .option-btn.incorrect {
     background-color: #f44336;
+}
+
+.submit-answer {
+    display: block;
+    width: 100%;
+    margin: 15px 0;
+    padding: 15px;
+    font-size: 1.1em;
 }
 
 /* Headers */
@@ -193,6 +211,34 @@ h2 {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+    padding: 10px 0;
+}
+
+/* Rounds Navigation */
+.rounds-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.round-indicator {
+    padding: 8px 15px;
+    background-color: #ddd;
+    border-radius: 20px;
+    font-size: 0.9em;
+    cursor: default;
+}
+
+.round-indicator.current {
+    background-color: #c41e3a;
+    color: white;
+}
+
+.round-indicator.completed {
+    background-color: #4CAF50;
+    color: white;
 }
 
 /* Leaderboard */
