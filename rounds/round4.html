@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Movies Round</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Round 4: Christmas Movies 🎬</h1>
+        
+        <div class="progress-container">
+            <div id="quiz-progress" class="progress-bar"></div>
+        </div>
+
+        <div class="question-container">
+            <div class="question" data-correct="Will Ferrell">
+                <h3>Question 1:</h3>
+                <p>Who plays Buddy in the movie "Elf"?</p>
+                <div class="options">
+                    <button class="option">Jim Carrey</button>
+                    <button class="option">Will Ferrell</button>
+                    <button class="option">Adam Sandler</button>
+                    <button class="option">Ben Stiller</button>
+                </div>
+            </div>
+
+            <div class="question" data-correct="Home Alone">
+                <h3>Question 2:</h3>
+                <p>Which Christmas movie features Kevin McCallister?</p>
+                <div class="options">
+                    <button class="option">The Santa Clause</button>
+                    <button class="option">Miracle on 34th Street</button>
+                    <button class="option">Home Alone</button>
+                    <button class="option">Jingle All the Way</button>
+                </div>
+            </div>
+
+            <div class="question" data-correct="The Polar Express">
+                <h3>Question 3:</h3>
+                <p>Which animated Christmas film features Tom Hanks as the train conductor?</p>
+                <div class="options">
+                    <button class="option">The Polar Express</button>
+                    <button class="option">Frosty the Snowman</button>
+                    <button class="option">Santa Claus Is Comin' to Town</button>
+                    <button class="option">The Snowman</button>
+                </div>
+            </div>
+
+            <div class="question" data-correct="1946">
+                <h3>Question 4:</h3>
+                <p>In which year was "It's a Wonderful Life" released?</p>
+                <div class="options">
+                    <button class="option">1944</button>
+                    <button class="option">1946</button>
+                    <button class="option">1948</button>
+                    <button class="option">1950</button>
+                </div>
+            </div>
+
+            <div class="question" data-correct="Tim Allen">
+                <h3>Question 5:</h3>
+                <p>Who plays Scott Calvin in "The Santa Clause"?</p>
+                <div class="options">
+                    <button class="option">Tom Hanks</button>
+                    <button class="option">Tim Allen</button>
+                    <button class="option">Robin Williams</button>
+                    <button class="option">Steve Martin</button>
+                </div>
+            </div>
+        </div>
+
+        <button id="submit-round" class="submit-button">Submit Answers</button>
+    </div>
+
+    <script type="module">
+        import { QuizInterface } from '../js/quizInterface.js';
+        const quiz = new QuizInterface();
+        quiz.initializeRound(4);
+    </script>
+</body>
+</html>

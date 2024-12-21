@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christmas Music Round</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Round 3: Christmas Music 🎵</h1>
+        
+        <div class="progress-container">
+            <div id="quiz-progress" class="progress-bar"></div>
+        </div>
+
+        <div class="question-container">
+            <div class="question" data-correct="Mariah Carey">
+                <h3>Question 1:</h3>
+                <p>Who sang "All I Want for Christmas Is You" (1994)?</p>
+                <div class="options">
+                    <button class="option">Whitney Houston</button>
+                    <button class="option">Mariah Carey</button>
+                    <button class="option">Celine Dion</button>
+                    <button class="option">Christina Aguilera</button>
+                </div>
+            </div>
+
+            <div class="question" data-correct="Bing Crosby">
+                <h3>Question 2:</h3>
+                <p>Which artist made "White Christmas" famous?</p>
+                <div class="options">
+                    <button class="option">Frank Sinatra</button>
+                    <button class="option">Dean Martin</button>
+                    <button class="option">Bing Crosby</button>
+                    <button class="option">Elvis Presley</button>
+                </div>
+            </div>
+
+            <div class="question" data-correct="Band Aid">
+                <h3>Question 3:</h3>
+                <p>Which supergroup recorded "Do They Know It's Christmas?" in 1984?</p>
+                <div class="options">
+                    <button class="option">USA for Africa</button>
+                    <button class="option">Band Aid</button>
+                    <button class="option">Live Aid</button>
+                    <button class="option">Artists United</button>
+                </div>
+            </div>
+
+            <div class="question" data-correct="1934">
+                <h3>Question 4:</h3>
+                <p>In which year was "Santa Claus Is Coming to Town" first recorded?</p>
+                <div class="options">
+                    <button class="option">1934</button>
+                    <button class="option">1944</button>
+                    <button class="option">1954</button>
+                    <button class="option">1964</button>
+                </div>
+            </div>
+
+            <div class="question" data-correct="Wham!">
+                <h3>Question 5:</h3>
+                <p>Which group released "Last Christmas"?</p>
+                <div class="options">
+                    <button class="option">Duran Duran</button>
+                    <button class="option">Wham!</button>
+                    <button class="option">Culture Club</button>
+                    <button class="option">Spandau Ballet</button>
+                </div>
+            </div>
+        </div>
+
+        <button id="submit-round" class="submit-button">Submit Answers</button>
+    </div>
+
+    <script type="module">
+        import { QuizInterface } from '../js/quizInterface.js';
+        const quiz = new QuizInterface();
+        quiz.initializeRound(3);
+    </script>
+</body>
+</html>

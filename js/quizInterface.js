@@ -8,6 +8,9 @@ export class QuizInterface {
         this.quizConfig = null;
         this.currentRoundId = 1;
         this.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
+        this.loginAttempts = {};
+        this.maxLoginAttempts = 5;
+        this.lockoutDuration = 15 * 60 * 1000; // 15 minutes in milliseconds
 
         // Try to restore team from localStorage
         const storedTeam = localStorage.getItem('currentTeam');
@@ -225,26 +228,114 @@ export class QuizInterface {
         document.body.insertBefore(errorDiv, document.body.firstChild);
     }
 
+    validateTeamName(teamName) {
+        // Check length
+        if (teamName.length < 2 || teamName.length > 30) {
+            throw new Error('Team name must be between 2 and 30 characters');
+        }
+
+        // Check for valid characters (letters, numbers, spaces, and common punctuation)
+        const validNameRegex = /^[a-zA-Z0-9\s\-_',.!]+$/;
+        if (!validNameRegex.test(teamName)) {
+            throw new Error('Team name contains invalid characters');
+        }
+
+        // Check for inappropriate content (basic filter)
+        const inappropriateWords = ['admin', 'root', 'system', 'moderator'];
+        if (inappropriateWords.some(word => teamName.toLowerCase().includes(word))) {
+            throw new Error('Team name contains restricted words');
+        }
+
+        return true;
+    }
+
+    sanitizeInput(input) {
+        // Remove any HTML tags
+        input = input.replace(/<[^>]*>/g, '');
+        // Convert special characters to HTML entities
+        input = input.replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[char]));
+        return input.trim();
+    }
+
+    isLockedOut(teamName) {
+        const attempts = this.loginAttempts[teamName];
+        if (!attempts) return false;
+
+        if (attempts.count >= this.maxLoginAttempts && 
+            Date.now() - attempts.lastAttempt < this.lockoutDuration) {
+            return true;
+        }
+
+        // Reset if lockout period has passed
+        if (Date.now() - attempts.lastAttempt >= this.lockoutDuration) {
+            delete this.loginAttempts[teamName];
+        }
+
+        return false;
+    }
+
+    recordLoginAttempt(teamName, success) {
+        if (!this.loginAttempts[teamName]) {
+            this.loginAttempts[teamName] = { count: 0, lastAttempt: Date.now() };
+        }
+
+        if (!success) {
+            this.loginAttempts[teamName].count++;
+            this.loginAttempts[teamName].lastAttempt = Date.now();
+        } else {
+            // Reset on successful login
+            delete this.loginAttempts[teamName];
+        }
+    }
+
     handleLogin() {
-        const teamName = document.getElementById('team-name')?.value;
-        const password = document.getElementById('team-password')?.value;
-
-        if (!teamName || !password) {
-            alert('Please enter both team name and password!');
-            return;
-        }
-
-        if (teamName === 'Quiz Master' && password === 'quizmaster2024') {
-            this.isAdmin = true;
-            localStorage.setItem('currentTeam', 'Quiz Master');
-            this.showAdminControls();
-            return;
-        }
-
         try {
+            let teamName = document.getElementById('team-name')?.value;
+            let password = document.getElementById('team-password')?.value;
+
+            if (!teamName || !password) {
+                throw new Error('Please enter both team name and password!');
+            }
+
+            // Sanitize inputs
+            teamName = this.sanitizeInput(teamName);
+            password = this.sanitizeInput(password);
+
+            // Check for lockout
+            if (this.isLockedOut(teamName)) {
+                const remainingTime = Math.ceil((this.lockoutDuration - 
+                    (Date.now() - this.loginAttempts[teamName].lastAttempt)) / 60000);
+                throw new Error(`Account is locked. Please try again in ${remainingTime} minutes.`);
+            }
+
+            // Admin login
+            if (teamName === 'Quiz Master') {
+                if (password === 'quizmaster2024') {
+                    this.isAdmin = true;
+                    localStorage.setItem('currentTeam', 'Quiz Master');
+                    this.showAdminControls();
+                    this.recordLoginAttempt(teamName, true);
+                    return;
+                } else {
+                    this.recordLoginAttempt(teamName, false);
+                    throw new Error('Invalid admin credentials');
+                }
+            }
+
+            // Validate team name for non-admin users
+            this.validateTeamName(teamName);
+
+            // Regular team login
             const team = this.quizState.addTeam(teamName, password);
             this.currentTeam = teamName;
             localStorage.setItem('currentTeam', teamName);
+            this.recordLoginAttempt(teamName, true);
             window.location.href = `${this.basePath}/rounds/round${team.currentRound}.html`;
         } catch (error) {
             alert(error.message);
