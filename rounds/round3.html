@@ -15,63 +15,71 @@
         </div>
 
         <div class="question-container">
-            <div class="question" data-correct="Mariah Carey">
+            <div class="question active" data-question-id="1" data-correct="A">
                 <h3>Question 1:</h3>
                 <p>Who sang "All I Want for Christmas Is You" (1994)?</p>
                 <div class="options">
-                    <button class="option">Whitney Houston</button>
-                    <button class="option">Mariah Carey</button>
-                    <button class="option">Celine Dion</button>
-                    <button class="option">Christina Aguilera</button>
+                    <button class="option-btn" data-answer="A">Mariah Carey</button>
+                    <button class="option-btn" data-answer="B">Whitney Houston</button>
+                    <button class="option-btn" data-answer="C">Celine Dion</button>
+                    <button class="option-btn" data-answer="D">Christina Aguilera</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
 
-            <div class="question" data-correct="Bing Crosby">
+            <div class="question" data-question-id="2" data-correct="B">
                 <h3>Question 2:</h3>
                 <p>Which artist made "White Christmas" famous?</p>
                 <div class="options">
-                    <button class="option">Frank Sinatra</button>
-                    <button class="option">Dean Martin</button>
-                    <button class="option">Bing Crosby</button>
-                    <button class="option">Elvis Presley</button>
+                    <button class="option-btn" data-answer="A">Frank Sinatra</button>
+                    <button class="option-btn" data-answer="B">Bing Crosby</button>
+                    <button class="option-btn" data-answer="C">Dean Martin</button>
+                    <button class="option-btn" data-answer="D">Elvis Presley</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
 
-            <div class="question" data-correct="Band Aid">
+            <div class="question" data-question-id="3" data-correct="A">
                 <h3>Question 3:</h3>
                 <p>Which supergroup recorded "Do They Know It's Christmas?" in 1984?</p>
                 <div class="options">
-                    <button class="option">USA for Africa</button>
-                    <button class="option">Band Aid</button>
-                    <button class="option">Live Aid</button>
-                    <button class="option">Artists United</button>
+                    <button class="option-btn" data-answer="A">Band Aid</button>
+                    <button class="option-btn" data-answer="B">USA for Africa</button>
+                    <button class="option-btn" data-answer="C">Live Aid</button>
+                    <button class="option-btn" data-answer="D">Artists United</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
 
-            <div class="question" data-correct="1934">
+            <div class="question" data-question-id="4" data-correct="A">
                 <h3>Question 4:</h3>
                 <p>In which year was "Santa Claus Is Coming to Town" first recorded?</p>
                 <div class="options">
-                    <button class="option">1934</button>
-                    <button class="option">1944</button>
-                    <button class="option">1954</button>
-                    <button class="option">1964</button>
+                    <button class="option-btn" data-answer="A">1934</button>
+                    <button class="option-btn" data-answer="B">1944</button>
+                    <button class="option-btn" data-answer="C">1954</button>
+                    <button class="option-btn" data-answer="D">1964</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
 
-            <div class="question" data-correct="Wham!">
+            <div class="question" data-question-id="5" data-correct="B">
                 <h3>Question 5:</h3>
                 <p>Which group released "Last Christmas"?</p>
                 <div class="options">
-                    <button class="option">Duran Duran</button>
-                    <button class="option">Wham!</button>
-                    <button class="option">Culture Club</button>
-                    <button class="option">Spandau Ballet</button>
+                    <button class="option-btn" data-answer="A">Duran Duran</button>
+                    <button class="option-btn" data-answer="B">Wham!</button>
+                    <button class="option-btn" data-answer="C">Culture Club</button>
+                    <button class="option-btn" data-answer="D">Spandau Ballet</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
         </div>
 
-        <button id="submit-round" class="submit-button">Submit Answers</button>
+        <div class="navigation-buttons">
+            <button id="prev-btn" style="display: none;">Previous</button>
+            <button id="next-btn">Next</button>
+        </div>
     </div>
 
     <script type="module">

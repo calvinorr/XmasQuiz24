@@ -166,6 +166,27 @@ export class QuizInterface {
                 3: "C", // White Rock Beverages
                 4: "A", // Turkey
                 5: "B"  // Eggnog
+            },
+            3: { // Round 3 - Christmas Music
+                1: "A", // Mariah Carey
+                2: "B", // Bing Crosby
+                3: "A", // Band Aid
+                4: "A", // 1934
+                5: "B"  // Wham!
+            },
+            4: { // Round 4 - Christmas Movies
+                1: "B", // Will Ferrell
+                2: "C", // Home Alone
+                3: "A", // The Polar Express
+                4: "B", // 1946
+                5: "B"  // Tim Allen
+            },
+            5: { // Round 5 - Christmas Traditions
+                1: "B", // Germany
+                2: "B", // Coca-Cola
+                3: "C", // Poinsettia
+                4: "B", // December 6th
+                5: "B"  // Mistletoe
             }
         };
 

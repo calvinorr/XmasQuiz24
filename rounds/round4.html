@@ -15,63 +15,71 @@
         </div>
 
         <div class="question-container">
-            <div class="question" data-correct="Will Ferrell">
+            <div class="question active" data-question-id="1" data-correct="B">
                 <h3>Question 1:</h3>
                 <p>Who plays Buddy in the movie "Elf"?</p>
                 <div class="options">
-                    <button class="option">Jim Carrey</button>
-                    <button class="option">Will Ferrell</button>
-                    <button class="option">Adam Sandler</button>
-                    <button class="option">Ben Stiller</button>
+                    <button class="option-btn" data-answer="A">Jim Carrey</button>
+                    <button class="option-btn" data-answer="B">Will Ferrell</button>
+                    <button class="option-btn" data-answer="C">Adam Sandler</button>
+                    <button class="option-btn" data-answer="D">Ben Stiller</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
 
-            <div class="question" data-correct="Home Alone">
+            <div class="question" data-question-id="2" data-correct="C">
                 <h3>Question 2:</h3>
                 <p>Which Christmas movie features Kevin McCallister?</p>
                 <div class="options">
-                    <button class="option">The Santa Clause</button>
-                    <button class="option">Miracle on 34th Street</button>
-                    <button class="option">Home Alone</button>
-                    <button class="option">Jingle All the Way</button>
+                    <button class="option-btn" data-answer="A">The Santa Clause</button>
+                    <button class="option-btn" data-answer="B">Miracle on 34th Street</button>
+                    <button class="option-btn" data-answer="C">Home Alone</button>
+                    <button class="option-btn" data-answer="D">Jingle All the Way</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
 
-            <div class="question" data-correct="The Polar Express">
+            <div class="question" data-question-id="3" data-correct="A">
                 <h3>Question 3:</h3>
                 <p>Which animated Christmas film features Tom Hanks as the train conductor?</p>
                 <div class="options">
-                    <button class="option">The Polar Express</button>
-                    <button class="option">Frosty the Snowman</button>
-                    <button class="option">Santa Claus Is Comin' to Town</button>
-                    <button class="option">The Snowman</button>
+                    <button class="option-btn" data-answer="A">The Polar Express</button>
+                    <button class="option-btn" data-answer="B">Frosty the Snowman</button>
+                    <button class="option-btn" data-answer="C">Santa Claus Is Comin' to Town</button>
+                    <button class="option-btn" data-answer="D">The Snowman</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
 
-            <div class="question" data-correct="1946">
+            <div class="question" data-question-id="4" data-correct="B">
                 <h3>Question 4:</h3>
                 <p>In which year was "It's a Wonderful Life" released?</p>
                 <div class="options">
-                    <button class="option">1944</button>
-                    <button class="option">1946</button>
-                    <button class="option">1948</button>
-                    <button class="option">1950</button>
+                    <button class="option-btn" data-answer="A">1944</button>
+                    <button class="option-btn" data-answer="B">1946</button>
+                    <button class="option-btn" data-answer="C">1948</button>
+                    <button class="option-btn" data-answer="D">1950</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
 
-            <div class="question" data-correct="Tim Allen">
+            <div class="question" data-question-id="5" data-correct="B">
                 <h3>Question 5:</h3>
                 <p>Who plays Scott Calvin in "The Santa Clause"?</p>
                 <div class="options">
-                    <button class="option">Tom Hanks</button>
-                    <button class="option">Tim Allen</button>
-                    <button class="option">Robin Williams</button>
-                    <button class="option">Steve Martin</button>
+                    <button class="option-btn" data-answer="A">Tom Hanks</button>
+                    <button class="option-btn" data-answer="B">Tim Allen</button>
+                    <button class="option-btn" data-answer="C">Robin Williams</button>
+                    <button class="option-btn" data-answer="D">Steve Martin</button>
                 </div>
+                <button class="submit-answer">Submit Answer</button>
             </div>
         </div>
 
-        <button id="submit-round" class="submit-button">Submit Answers</button>
+        <div class="navigation-buttons">
+            <button id="prev-btn" style="display: none;">Previous</button>
+            <button id="next-btn">Next</button>
+        </div>
     </div>
 
     <script type="module">
