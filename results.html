@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="team-info">
+            <h3>Team: <span id="current-team"></span></h3>
+            <p>Final Score: <span id="current-score">0</span></p>
+        </div>
+
+        <div class="results-container">
+            <h1>🎄 Quiz Complete! 🎅</h1>
+            
+            <div class="round-scores">
+                <h2>Your Round Scores:</h2>
+                <div id="round-scores-list">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="final-leaderboard">
+                <h2>Final Leaderboard</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="results-actions">
+                <button id="share-results" class="action-button">Share Results</button>
+                <button id="play-again" class="action-button">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Handle base path for GitHub Pages
+        window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
+    </script>
+    <script type="module">
+        let quizInterface = null;
+
+        async function initializeResults() {
+            try {
+                console.log('Starting results initialization...');
+                const modulePath = `${window.basePath}/js/quizInterface.js`.replace('//', '/');
+                console.log('Loading QuizInterface from:', modulePath);
+                
+                const { QuizInterface } = await import(modulePath);
+                console.log('QuizInterface loaded');
+                
+                quizInterface = new QuizInterface();
+                window.quizInterface = quizInterface;
+                console.log('QuizInterface instance created');
+                
+                await quizInterface.initialize();
+                displayResults();
+                setupResultsEventListeners();
+            } catch (error) {
+                console.error('Error initializing results:', error);
+                showError('Error loading results. Please try refreshing the page.');
+            }
+        }
+
+        function displayResults() {
+            const currentTeam = localStorage.getItem('currentTeam');
+            if (!currentTeam) {
+                window.location.href = window.basePath + '/index.html';
+                return;
+            }
+
+            // Display team name
+            document.getElementById('current-team').textContent = currentTeam;
+
+            // Get team progress
+            const progress = quizInterface.quizState.getTeamProgress(currentTeam);
+            if (!progress) return;
+
+            // Display final score
+            document.getElementById('current-score').textContent = progress.score;
+
+            // Display round scores
+            const roundScoresList = document.getElementById('round-scores-list');
+            const roundNames = [
+                'Picture Round',
+                'Christmas Trivia',
+                'Christmas Music',
+                'Christmas Movies',
+                'Christmas Traditions'
+            ];
+
+            roundScoresList.innerHTML = roundNames.map((name, index) => {
+                const roundNumber = index + 1;
+                const roundScore = Object.entries(progress.answers)
+                    .filter(([key]) => key.startsWith(`${roundNumber}-`))
+                    .filter(([_, correct]) => correct)
+                    .length;
+                return `
+                    <div class="round-score">
+                        <span class="round-name">Round ${roundNumber}: ${name}</span>
+                        <span class="score">${roundScore}/5</span>
+                    </div>
+                `;
+            }).join('');
+
+            // Display leaderboard
+            const leaderboard = quizInterface.quizState.getLeaderboard();
+            const leaderboardBody = document.getElementById('leaderboard-body');
+            leaderboardBody.innerHTML = leaderboard
+                .map((team, index) => `
+                    <tr class="${team.name === currentTeam ? 'current-team' : ''}">
+                        <td>${index + 1}</td>
+                        <td>${team.name}</td>
+                        <td>${team.score}</td>
+                    </tr>
+                `).join('');
+        }
+
+        function setupResultsEventListeners() {
+            document.getElementById('share-results').addEventListener('click', () => {
+                const team = quizInterface.quizState.getTeamProgress(localStorage.getItem('currentTeam'));
+                const text = `I scored ${team.score}/25 in the Christmas Quiz! 🎄`;
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Christmas Quiz Results',
+                        text: text
+                    }).catch(console.error);
+                } else {
+                    // Fallback to copying to clipboard
+                    navigator.clipboard.writeText(text)
+                        .then(() => alert('Results copied to clipboard!'))
+                        .catch(console.error);
+                }
+            });
+
+            document.getElementById('play-again').addEventListener('click', () => {
+                localStorage.removeItem('currentTeam');
+                window.location.href = window.basePath + '/index.html';
+            });
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.insertBefore(errorDiv, document.body.firstChild);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializeResults);
+    </script>
+</body>
+</html>

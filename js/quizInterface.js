@@ -86,8 +86,18 @@ export class QuizInterface {
 
         this.currentTeam = currentTeam;
         const currentTeamElement = document.getElementById('current-team');
+        const scoreElement = document.getElementById('current-score');
+        
         if (currentTeamElement) {
             currentTeamElement.textContent = this.currentTeam;
+        }
+        
+        // Update score display
+        if (scoreElement) {
+            const team = this.quizState.getTeamProgress(this.currentTeam);
+            if (team) {
+                scoreElement.textContent = team.score;
+            }
         }
 
         // Get current round from URL
@@ -238,7 +248,16 @@ export class QuizInterface {
         } else {
             // Complete round
             this.quizState.completeRound(this.currentTeam, this.currentRoundId);
-            window.location.href = `${this.basePath}/rounds/round${this.currentRoundId + 1}.html`;
+            
+            // If this is the last round, go to results page
+            if (this.currentRoundId === 5) {
+                window.location.href = `${this.basePath}/results.html`;
+            } else {
+                // Update team score in localStorage before navigating
+                const team = this.quizState.getTeamProgress(this.currentTeam);
+                localStorage.setItem('teamScore', team.score.toString());
+                window.location.href = `${this.basePath}/rounds/round${this.currentRoundId + 1}.html`;
+            }
         }
     }
 
