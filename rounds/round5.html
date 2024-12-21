@@ -3,89 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christmas Traditions Round</title>
+    <title>Round 5 - Christmas Traditions</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
-    <div class="quiz-container">
-        <h1>Round 5: Christmas Traditions 🎄</h1>
-        
-        <div class="progress-container">
-            <div id="quiz-progress" class="progress-bar"></div>
+    <div class="container">
+        <div class="team-info">
+            <h3>Team: <span id="current-team"></span></h3>
+            <p>Current Score: <span id="current-score">0</span></p>
         </div>
 
-        <div class="question-container">
-            <div class="question active" data-question-id="1" data-correct="B">
-                <h3>Question 1:</h3>
-                <p>Which country is credited with starting the tradition of Christmas trees?</p>
-                <div class="options">
-                    <button class="option-btn" data-answer="A">England</button>
-                    <button class="option-btn" data-answer="B">Germany</button>
-                    <button class="option-btn" data-answer="C">France</button>
-                    <button class="option-btn" data-answer="D">Norway</button>
-                </div>
-                <button class="submit-answer">Submit Answer</button>
-            </div>
-
-            <div class="question" data-question-id="2" data-correct="B">
-                <h3>Question 2:</h3>
-                <p>Which company is largely responsible for Santa's red and white color scheme in popular culture?</p>
-                <div class="options">
-                    <button class="option-btn" data-answer="A">Pepsi</button>
-                    <button class="option-btn" data-answer="B">Coca-Cola</button>
-                    <button class="option-btn" data-answer="C">McDonald's</button>
-                    <button class="option-btn" data-answer="D">Walmart</button>
-                </div>
-                <button class="submit-answer">Submit Answer</button>
-            </div>
-
-            <div class="question" data-question-id="3" data-correct="C">
-                <h3>Question 3:</h3>
-                <p>Which flower is known as the 'Christmas Flower'?</p>
-                <div class="options">
-                    <button class="option-btn" data-answer="A">Rose</button>
-                    <button class="option-btn" data-answer="B">Lily</button>
-                    <button class="option-btn" data-answer="C">Poinsettia</button>
-                    <button class="option-btn" data-answer="D">Tulip</button>
-                </div>
-                <button class="submit-answer">Submit Answer</button>
-            </div>
-
-            <div class="question" data-question-id="4" data-correct="B">
-                <h3>Question 4:</h3>
-                <p>On which date is St. Nicholas Day traditionally celebrated?</p>
-                <div class="options">
-                    <button class="option-btn" data-answer="A">December 1st</button>
-                    <button class="option-btn" data-answer="B">December 6th</button>
-                    <button class="option-btn" data-answer="C">December 13th</button>
-                    <button class="option-btn" data-answer="D">December 24th</button>
-                </div>
-                <button class="submit-answer">Submit Answer</button>
-            </div>
-
-            <div class="question" data-question-id="5" data-correct="B">
-                <h3>Question 5:</h3>
-                <p>Which Christmas plant is considered a parasitic plant?</p>
-                <div class="options">
-                    <button class="option-btn" data-answer="A">Holly</button>
-                    <button class="option-btn" data-answer="B">Mistletoe</button>
-                    <button class="option-btn" data-answer="C">Ivy</button>
-                    <button class="option-btn" data-answer="D">Pine</button>
-                </div>
-                <button class="submit-answer">Submit Answer</button>
+        <div class="round-info">
+            <h2>Round 5: Christmas Traditions 🎄</h2>
+            <div class="rounds-nav">
+                <span class="round-indicator" id="round1-indicator">Picture Round</span>
+                <span class="round-indicator" id="round2-indicator">Christmas Trivia</span>
+                <span class="round-indicator" id="round3-indicator">Christmas Music</span>
+                <span class="round-indicator" id="round4-indicator">Christmas Movies</span>
+                <span class="round-indicator current" id="round5-indicator">Christmas Traditions</span>
             </div>
         </div>
 
-        <div class="navigation-buttons">
+        <div class="progress-bar">
+            <div class="progress" id="quiz-progress"></div>
+        </div>
+
+        <div class="question active" data-question-id="1">
+            <h3>Question 1:</h3>
+            <p>Which country is credited with starting the tradition of Christmas trees?</p>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) England</button>
+                <button class="option-btn" data-answer="B">B) Germany</button>
+                <button class="option-btn" data-answer="C">C) France</button>
+                <button class="option-btn" data-answer="D">D) Norway</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="2">
+            <h3>Question 2:</h3>
+            <p>Which company is largely responsible for Santa's red and white color scheme in popular culture?</p>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Pepsi</button>
+                <button class="option-btn" data-answer="B">B) Coca-Cola</button>
+                <button class="option-btn" data-answer="C">C) McDonald's</button>
+                <button class="option-btn" data-answer="D">D) Walmart</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="3">
+            <h3>Question 3:</h3>
+            <p>Which flower is known as the 'Christmas Flower'?</p>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Rose</button>
+                <button class="option-btn" data-answer="B">B) Lily</button>
+                <button class="option-btn" data-answer="C">C) Poinsettia</button>
+                <button class="option-btn" data-answer="D">D) Tulip</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="4">
+            <h3>Question 4:</h3>
+            <p>On which date is St. Nicholas Day traditionally celebrated?</p>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) December 1st</button>
+                <button class="option-btn" data-answer="B">B) December 6th</button>
+                <button class="option-btn" data-answer="C">C) December 13th</button>
+                <button class="option-btn" data-answer="D">D) December 24th</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="question" data-question-id="5">
+            <h3>Question 5:</h3>
+            <p>Which Christmas plant is considered a parasitic plant?</p>
+            <div class="options">
+                <button class="option-btn" data-answer="A">A) Holly</button>
+                <button class="option-btn" data-answer="B">B) Mistletoe</button>
+                <button class="option-btn" data-answer="C">C) Ivy</button>
+                <button class="option-btn" data-answer="D">D) Pine</button>
+            </div>
+            <button class="submit-answer">Submit Answer</button>
+        </div>
+
+        <div class="navigation">
             <button id="prev-btn" style="display: none;">Previous</button>
             <button id="next-btn">Next</button>
         </div>
     </div>
 
+    <script>
+        // Handle base path for GitHub Pages
+        window.basePath = window.location.pathname.includes('XmasQuiz24') ? '/XmasQuiz24' : '';
+    </script>
     <script type="module">
-        import { QuizInterface } from '../js/quizInterface.js';
-        const quiz = new QuizInterface();
-        quiz.initializeRound(5);
+        let quizInterface = null;
+
+        async function initializeRound() {
+            try {
+                console.log('Starting round initialization...');
+                const modulePath = `${window.basePath}/js/quizInterface.js`.replace('//', '/');
+                console.log('Loading QuizInterface from:', modulePath);
+                
+                const { QuizInterface } = await import(modulePath);
+                console.log('QuizInterface loaded');
+                
+                quizInterface = new QuizInterface();
+                window.quizInterface = quizInterface;
+                console.log('QuizInterface instance created');
+                
+                await quizInterface.initialize();
+                console.log('Round initialization complete');
+            } catch (error) {
+                console.error('Detailed error during round initialization:', {
+                    message: error.message,
+                    stack: error.stack,
+                    type: error.name
+                });
+                showError('Error loading round. Please return to the main page and try again.');
+            }
+        }
+
+        function showError(message) {
+            console.error('Showing error:', message);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            document.body.insertBefore(errorDiv, document.body.firstChild);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded, starting round initialization...');
+            initializeRound().catch(error => {
+                console.error('Top-level initialization error:', error);
+                showError('Failed to start round. Please return to the main page.');
+            });
+        });
     </script>
 </body>
 </html>
