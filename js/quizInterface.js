@@ -164,11 +164,11 @@ export class QuizInterface {
     checkAnswer(roundId, questionId, answer) {
         const answers = {
             1: { // Round 1 - Picture Round
-                1: "A", // The Nutcracker
-                2: "B", // Home Alone
-                3: "C", // Mistletoe
-                4: "A", // Harrods
-                5: "B"  // Gingerbread
+                1: "A", // Victoria Square
+                2: "B", // 42
+                3: "B", // Albert Clock
+                4: "C", // 4.2 Feet
+                5: "B"  // 7
             },
             2: { // Round 2 - Christmas Trivia
                 1: "B", // Ten lords

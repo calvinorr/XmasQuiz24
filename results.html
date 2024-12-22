@@ -132,7 +132,7 @@
         function setupResultsEventListeners() {
             document.getElementById('share-results').addEventListener('click', () => {
                 const team = quizInterface.quizState.getTeamProgress(localStorage.getItem('currentTeam'));
-                const text = `I scored ${team.score}/25 in the Christmas Quiz! 🎄`;
+                const text = `We scored ${team.score}/25 in the Christmas Quiz! 🎄`;
                 if (navigator.share) {
                     navigator.share({
                         title: 'Christmas Quiz Results',

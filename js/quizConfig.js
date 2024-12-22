@@ -5,7 +5,7 @@ export const quizConfig = {
         {
             id: 1,
             title: "Picture Round",
-            description: "Can you identify these festive images?",
+            description: "Can you identify these local landmarks?",
             type: "image",
             path: "rounds/round1.html"
         },
